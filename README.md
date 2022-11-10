@@ -48,7 +48,6 @@ We hope to parallelize our implementation using multiple frameworks (such as Cil
 
 We also hope to create a demo tool that shows the different intermediate steps in image compression, and how discarding a large percentage of fourier coefficients doesn’t adversely affect image quality.
 
-
 ### *Deliverables:*
 
 We will predominantly be focusing on showing speedup graphs of our various implementations as well as other performance metrics that we measure. If time allows, we will either have a demo of the various stages in image compression or some images that illustrate them.
