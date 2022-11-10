@@ -61,10 +61,10 @@ The parallelism in 2D FFT makes OpenMP a good candidate while the recursive natu
 
 ## **Schedule**
 
-Note that we are targeting the early submission deadline of 12/9.
-Week 0 (11/7): Familiarize ourselves with FFT and start implementation of sequential code
-Week 1 (11/14): Complete implementation of sequential code and identify areas of parallelism
-Week 2 (11/21): Begin and complete parallelization using OpenMP
-Week 3 (11/28): Measure and analyze results
-Week 4 (12/5): Final writeup
+Note that we are targeting the early submission deadline of 12/9.<br>
+Week 0 (11/7): Familiarize ourselves with FFT and start implementation of sequential code<br>
+Week 1 (11/14): Complete implementation of sequential code and identify areas of parallelism<br>
+Week 2 (11/21): Begin and complete parallelization using OpenMP<br>
+Week 3 (11/28): Measure and analyze results<br>
+Week 4 (12/5): Final writeup<br>
 Week 5 (12/12): Spillover in case we don’t meet the early deadline target
