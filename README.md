@@ -8,7 +8,7 @@ We are going to be parallelizing the one and two-dimensional versions of the Fas
 
 ### *What is Fast Fourier Transform (FFT)?*
 
-FFT is an algorithm, with roots in signal processing, for computing the so-called discrete Fourier transform (DFT) of a sequence of numbers. The naive approach to computing the DFT takes $O(n^2)$ time while FFT computes the result in $O(n \log (n))$ time. In the context of signal processing, FFT is used to decompose a signal into sinusoidal curves with different amplitudes and frequencies. This is known as converting a signal from the time domain to the frequency domain.
+FFT is an algorithm, with roots in signal processing, for computing the so-called discrete Fourier transform (DFT) of a sequence of numbers. The naive approach to computing the DFT takes O(n<sup>2</sup>) time while FFT computes the result in O(n log (n)) time. In the context of signal processing, FFT is used to decompose a signal into sinusoidal curves with different amplitudes and frequencies. This is known as converting a signal from the time domain to the frequency domain.
 
 ### *How can performance of FFT be improved and where can it be parallelized?*
 
