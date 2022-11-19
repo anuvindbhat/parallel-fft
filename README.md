@@ -1,69 +1,63 @@
-# Parallelizing Image Compression using FFT
-
 Anuvind Bhat (`anuvindb`) & Saatvik Suryajit Korisepati (`skorisep`)
 
 ## **Summary**
 
-We are going to be parallelizing an image compression algorithm that utilizes Fast Fourier Transform (FFT). We will be focusing on CPU parallelism on a shared memory machine. Depending on avenues for parallelism we discover, we will explore using different frameworks such as OpenMP, Cilk, ISPC, etc. We will also analyze the overhead and bottlenecks in our approach.
+We are going to be parallelizing the one and two-dimensional versions of the Fast Fourier Transform (FFT) algorithm with a focus on alleviating its bandwidth bottleneck. We will be focusing on parallelizing on a shared memory machine while utilizing OpenMP. This project is based on the findings from research conducted by Spiral Lab at CMU as well as additional research that we studied. Upon completing our implementation, we will be analyzing and comparing the performance improvement in terms of speedup, data movement, and data access of our FFT variants.
 
 ## **Background**
 
 ### *What is Fast Fourier Transform (FFT)?*
 
-FFT is an algorithm, with roots in signal processing, for computing the so-called discrete Fourier transform (DFT) of a sequence of numbers. The naive approach to computing the DFT takes O(n2) time while FFT computes the result in O(n log(n)) time. In the context of signal processing, FFT is used to decompose a signal into sinusoidal curves with different amplitudes and frequencies. This is known as converting a signal from the time domain to the frequency domain.
+FFT is an algorithm, with roots in signal processing, for computing the so-called discrete Fourier transform (DFT) of a sequence of numbers. The naive approach to computing the DFT takes $O(n^2)$ time while FFT computes the result in $O(n \log (n))$ time. In the context of signal processing, FFT is used to decompose a signal into sinusoidal curves with different amplitudes and frequencies. This is known as converting a signal from the time domain to the frequency domain.
 
-### *How can it be used for image compressions?*
+### *How can performance of FFT be improved and where can it be parallelized?*
 
-An image itself can be considered as a set of signals. In this perspective each pixel can be separated into brightness and color. The brightness can be viewed as the amplitude while the color can be viewed as the shift in phase. Therefore, by converting the image into signals, we are able to compress the image using the same FFT concept. Note that since images are 2D, a generalized version of the FFT known as 2D FFT needs to be used.
+1D FFT is naturally recursive and also has very poor data locality making it a memory bound algorithm. We will be working to alleviate this problem by exploring butterfly networks and iterative implementations that have better cache locality. Available parallelism is similar in both the recursive and iterative approaches. For the recursive implementation, we will also explore using the quadratic DFT algorithm at high recursion depths as it has better locality.
 
-### *How does it work?*
+2D FFT performs FFT of rows and then FFT of columns on a two-dimensional input. In this case, the actual computation across the rows and columns can be parallelized. However, the computation of FFT along columns involves strided memory accesses. To alleviate this issue we will be exploring techniques obtained from Spiral Lab’s research (transpose, tiling, etc.) as well as using our optimized version of 1D FFT.
 
-After applying FFT to an image, we are left with a new “image” where every pixel has a fourier coefficient. Empirically, for many images, the majority of coefficients are extremely small (eg. 98% of pixels are less than 5% of the maximum value). These small coefficients can be discarded as they contribute little to no information to the actual image. We can then store only those coefficients which are large (and their location), hence compressing the image. To retrieve the original image, inverse FFT is used and the majority of the original image’s information is preserved.
+## **The Challenge**
 
-### *Where can it be parallelized?*
+FFT is a memory-bound algorithm that doesn’t scale well with increasing compute. The algorithm has poor access patterns (locality) and does not utilize the cache hierarchy well. Furthermore, due to the recursive nature of the FFT formulation, the available parallelism isn’t the best. We also expect to encounter several other challenges once we begin our implementation.
 
-2D FFT performs FFT of rows and then FFT of columns of an image (or vice versa). In this case, the actual computation across the rows and columns can be parallelized. However, we will also explore parallelizing FFT of a given row or column as well (1D FFT). Since FFT is a recursive algorithm, we expect most of the challenge to be in parallelizing 1D FFT. Furthermore, upon calculating the FFT of an image, the result has to be post-processed to disregard insignificant data. This can also be potentially parallelized as it involves looking at each pixel value in the result.
-
-## **Challenge (needs work)**
-
-The recursive nature of FFT makes it non-trivial to parallelize. Furthermore, it is a memory bound algorithm that doesn’t scale well with increasing compute. The algorithm also has poor access patterns (locality) and does not utilize the cache hierarchy well. We also expect to run into several other challenges once we begin our implementation.
-
-As we are starting from scratch with our implementation, we expect the sequential implementation to also require significant work.
+As we are starting from scratch with our implementation, we expect the sequential implementations also to require significant work.
 
 ## **Resources**
 
-We will be using the CPUs of the GHC machines as well as the shared memory nodes on the Bridges 2 machines to measure how our implementation scales. We will start from scratch in our implementation. Upon completion of a sequential implementation, we will identify areas for parallelism (possibly in addition to ones we’ll already described) and will work on parallelizing the algorithm.
+We will be using the CPUs of the GHC machines as well as the shared memory nodes on Bridges-2 at the Pittsburgh Supercomputing Center to measure how our implementation scales. We will start from scratch in our implementation. Upon completion of a sequential implementation, we will identify areas for parallelism (possibly in addition to ones we’ll already described) and will work on parallelizing the algorithm.
 
-For inspiration, we will refer to existing research on parallel FFT implementations. For example, we will take a look at Spiral Lab’s work on optimizing FFT.
+We will refer to existing research on parallel FFT implementations. For example, we will take a look at Spiral Lab’s work on optimizing FFT memory access through transposes and blocked layouts. Some specific papers/resources we’re relying on are:
+1. Slides from Michael Bader’s course on Algorithms of Scientific Computing (FFT specific parts)
+2. Large Bandwidth-Efficient FFTs on Multicore and Multi-Socket Systems by the Spiral team
+3. FFTs with Near-Optimal Memory Access Through Block Data Layouts by the Spiral team
+4. A Fast Fourier Transform Compiler by Matteo Frigo
 
 ## **Goals and Deliverables**
 
 ### *Plan to achieve:*
 
-Parallelize FFT with at least OpenMP and analyze the performance against the sequential version. Quantitatively identify bottlenecks and overhead in our parallel implementation. We will also find a good reference implementation of FFT that we can use as a benchmark.
+Parallelize a recursive implementation of 1D FFT with OpenMP. Quantitatively identify bottlenecks and overhead in our parallel implementation and describe them with concepts learned in class. Explore switching to quadratic DFT at high recursion depths. Create another 1D implementation using the concept of butterfly networks and other optimizations (different code-path when data fits in cache) that are easier to perform on an iterative implementation to alleviate the memory bottleneck; parallelize this implementation. Compare the performance of the recursive and iterative approaches and explain any differences. Then we will implement 2D FFT using our 2 variants of 1D FFT. We will further optimize the memory access patterns (spatial locality) of 2D FFT using by transposing key intermediate results based on Spiral Lab’s research.
 
 ### *Hope to achieve:*
 
-We hope to parallelize our implementation using multiple frameworks (such as Cilk and ISPC). If this step is completed, we will also analyze the performance and compare the results from using these frameworks. We will also explore other algorithmic optimizations such as switching to iterative DFT algorithms at high recursion depths with the aim of utilizing SIMD instructions and better cache locality.
+We hope to utilize our new algorithm in the practical setting of image compression. If this step is completed, we will also analyze the performance and compare the results from naive and other image compression algorithms using FFT.
 
-We also hope to create a demo tool that shows the different intermediate steps in image compression, and how discarding a large percentage of fourier coefficients doesn’t adversely affect image quality.
+We will also attempt to parallelize the 2D FFT implementation further by utilizing the “tiling” approach mentioned in Spiral Lab’s research.
 
 ### *Deliverables:*
 
-We will predominantly be focusing on showing speedup graphs of our various implementations as well as other performance metrics that we measure. If time allows, we will either have a demo of the various stages in image compression or some images that illustrate them.
+We will predominantly be focusing on showing speedup graphs of our various implementations as well as other performance metrics that we measure. We will also be providing a detailed explanation of why our modifications provide improvements in speedup and locality (memory access). If time allows, we will either have a demo of the various stages in image compression or some images that illustrate them.
 
 ## **Platform Choice**
 
-We are going to be implementing the algorithm with a focus on parallelizing CPU execution. We made this decision as images are small enough to fit onto a computer’s memory and shared memory machines are more than sufficient for the task. Moreover, the recursive nature of FFT makes it most amenable to parallelism on shared memory systems.
+We are going to be implementing the algorithm with a focus on parallelizing on CPUs. We made this decision as the research we explored focused on FFT computation on CPUs. Furthermore, as one of our stretch goals is to apply our algorithm to image compression, we find that a computer’s memory and shared memory machines are more than sufficient for the task. 
 
-The parallelism in 2D FFT makes OpenMP a good candidate while the recursive nature of 1D FFT makes Cilk something worth exploring as well. In addition, we might explore switching over to the naive O(n2) DFT algorithm for small enough sizes, and SIMD instructions (with ISPC) would help with that.
+Since OpenMP can be used for parallelizing all the variants we want to implement (using tasks for the recursive variant), we decided on OpenMP as our framework.
 
 ## **Schedule**
-
 Note that we are targeting the early submission deadline of 12/9.<br>
-Week 0 (11/7): Familiarize ourselves with FFT and start implementation of sequential code<br>
-Week 1 (11/14): Complete implementation of sequential code and identify areas of parallelism<br>
-Week 2 (11/21): Begin and complete parallelization using OpenMP<br>
-Week 3 (11/28): Measure and analyze results<br>
-Week 4 (12/5): Final writeup<br>
+Week 1 (11/14): Complete proposal with concrete approaches for parallelism and improving memory bandwidth usage and begin sequential implementation <br>
+Week 2 (11/21): Parallelize recursive implementation (1D FFT), start cache-optimized iterative implementation and begin measuring results and bottlenecks (possibly try optimizations involving “chunking” in 1D FFT)<br>
+Week 3 (11/28): Compare performance/scaling of 2D FFT with the 2 different 1D FFT implementations as primitives. Improve cache locality when applying 1D FFT along columns.<br>
+Week 4 (12/5): Further measurements of results, exploring optimizations involving “chunking” of input data in 2D FFT. Final writeup<br>
 Week 5 (12/12): Spillover in case we don’t meet the early deadline target
