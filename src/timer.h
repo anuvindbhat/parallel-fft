@@ -2,6 +2,7 @@
 #define TIMER_H
 
 #include <chrono>
+#include <iostream>
 #include <string>
 #include <type_traits>
 
