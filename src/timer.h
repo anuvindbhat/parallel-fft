@@ -25,7 +25,7 @@ public:
     } else if constexpr (std::is_same_v<T, chrono::seconds>) {
       suffix = "s";
     } else {
-      // static_assert false is apparently ill formed
+      // static_assert false inside if constexpr is apparently ill formed
       // https://stackoverflow.com/questions/53945490
       static_assert(always_false<T>, "Unsupported duration");
     }
