@@ -17,15 +17,14 @@ template <bool inverse> void fft_rec(std::vector<std::complex<double>> &vec) {
   fft_rec<inverse>(even);
   fft_rec<inverse>(odd);
   constexpr int flag = inverse ? 1 : -1;
-  std::complex<double> currw(1), wn = std::polar(1., flag * 2 * pi / n);
   for (int i = 0; i < n / 2; ++i) {
+    std::complex<double> currw = std::polar(1., flag * 2 * pi * i / n);
     vec[i] = even[i] + currw * odd[i];
     vec[n / 2 + i] = even[i] - currw * odd[i];
     if constexpr (inverse) {
       vec[i] /= 2;
       vec[n / 2 + i] /= 2;
     }
-    currw *= wn;
   }
 }
 

@@ -9,7 +9,7 @@ int main() {
   {
     Timer<std::chrono::milliseconds> t("Hello Timer");
     std::vector<double> vec = {1, 2, 3, 4};
-    std::cout << vec << "\n";
+    std::cout << "Initial: " << vec << "\n";
     auto cvec = to_complex(vec);
     std::cout << "Before FFT: " << cvec << "\n";
     fft_rec<false>(cvec);
