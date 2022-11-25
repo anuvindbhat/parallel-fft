@@ -11,7 +11,6 @@ void fft_rec_helper(std::vector<std::complex<double>> &vec) {
     return;
   }
   std::vector<std::complex<double>> even(n / 2), odd(n / 2);
-#pragma omp parallel for schedule(static)
   for (int i = 0; i < n / 2; ++i) {
     even[i] = vec[2 * i];
     odd[i] = vec[2 * i + 1];
@@ -21,7 +20,6 @@ void fft_rec_helper(std::vector<std::complex<double>> &vec) {
   fft_rec_helper<inverse>(odd);
 #pragma omp taskwait
   constexpr int flag = inverse ? 1 : -1;
-#pragma omp parallel for schedule(static)
   for (int i = 0; i < n / 2; ++i) {
     std::complex<double> currw = std::polar(1., flag * 2 * pi * i / n);
     vec[i] = even[i] + currw * odd[i];
