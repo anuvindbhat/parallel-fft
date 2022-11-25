@@ -1,7 +1,5 @@
 #include "fft1d.h"
 #include "utils.h"
-#include <algorithm>
-#include <cassert>
 #include <complex>
 #include <vector>
 

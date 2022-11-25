@@ -3,7 +3,6 @@
 
 #include <cassert>
 #include <complex>
-#include <sstream>
 #include <vector>
 
 inline constexpr double pi = 3.14159265358979323846;
