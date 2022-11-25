@@ -15,7 +15,7 @@ $(TARGETBIN): $(SOURCES) $(HEADERS)
 	$(CXX) -o $@ $(CFLAGS) $(SOURCES)
 
 format:
-	clang-format -i src/*.cpp src/*.h
+	clang-format -i $(SOURCES) $(HEADERS)
 
 clean:
 	rm -rf ./*.out

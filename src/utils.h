@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <complex>
+#include <sstream>
 #include <vector>
 
 inline constexpr double pi = 3.14159265358979323846;
@@ -27,6 +28,20 @@ to_reals(const std::vector<std::complex<double>> &cvec) {
     vec[i] = cvec[i].real();
   }
   return vec;
+}
+
+template <typename T>
+std::ostream &operator<<(std::ostream &os, const std::vector<T> &vec) {
+  int n = vec.size();
+  os << '[';
+  for (int i = 0; i < n; ++i) {
+    os << vec[i];
+    if (i != n - 1) {
+      os << ", ";
+    }
+  }
+  os << ']';
+  return os;
 }
 
 #endif
