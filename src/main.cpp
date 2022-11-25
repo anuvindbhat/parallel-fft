@@ -20,7 +20,7 @@ int main() {
     fft_rec<true>(cvec);
     // std::cout << "After FFT-inv: " << cvec << "\n";
     vec = to_reals(cvec);
-    std::cout << "Initial: " << std::vector(vec.begin(), vec.begin() + 10) << "\n";
+    std::cout << "Final: " << std::vector(vec.begin(), vec.begin() + 10) << "\n";
   }
   return 0;
 }
