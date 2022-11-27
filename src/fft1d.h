@@ -4,8 +4,7 @@
 #include <complex>
 #include <vector>
 
+template <bool inverse> void dft(std::vector<std::complex<double>> &vec);
 template <bool inverse> void fft_rec(std::vector<std::complex<double>> &vec);
-
-void discreteFourierTransform(std::vector<std::complex<double>> &data, bool invert = false);
 
 #endif
