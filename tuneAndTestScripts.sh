@@ -2,11 +2,11 @@
 
 measureParallelThreshold() {
     for threshold in 1 2 4 8 16 32 48 64 128 256 512; do
-        echo $threshold 
-
         sed -i -r "s/ParallelRecusionThreshold = [0-9]*/ParallelRecusionThreshold = $threshold/" src/fft1d.cpp
 
         make
+
+        echo -ne "$threshold | " 
 
         ./fft.out
     done
@@ -19,7 +19,7 @@ measureSpeedupFFT () {
     printf "1 << 3, 1 << 10, 1 << 12, 1 << 14, 1 << 15, 1 << 17, 1 << 19, 1 << 20\n" >> timingRecursive.txt
     printf "=====================" >> timingRecursive.txt
 
-    sed -i -r "s/ParallelRecusionThreshold = [0-9]*/ParallelRecusionThreshold = 16/" src/fft1d.cpp
+    sed -i -r "s/ParallelRecusionThreshold = [0-9]*/ParallelRecusionThreshold = 16/" src/fft1d.cpp # change to 64 for PSC
 
     sed -i -r "s/codeBlock = [0-9]*/codeBlock = 1/" src/main.cpp
 
@@ -47,7 +47,7 @@ measureSpeedupDFT () {
     printf "1 << 3, 1 << 10, 1 << 12, 1 << 14, 1 << 15\n" >> timing.txt
     printf "=====================" >> timing.txt
 
-    sed -i -r "s/ParallelRecusionThreshold = [0-9]*/ParallelRecusionThreshold = 16/" src/fft1d.cpp
+    sed -i -r "s/ParallelRecusionThreshold = [0-9]*/ParallelRecusionThreshold = 16/" src/fft1d.cpp # change to 64 for PSC
 
     sed -i -r "s/codeBlock = [0-9]*/codeBlock = 0/" src/main.cpp
 
@@ -154,5 +154,7 @@ measureCacheAgainstParThresholdPSCversion () {
         perf stat -e L1-dcache-load-misses -e cache-references -o cacheRecursive.txt --append ./fft.out
     done
 }
+
+# Make sure to modify speedup functions when running on PSC
 
 measureSpeedupDFT

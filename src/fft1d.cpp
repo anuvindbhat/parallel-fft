@@ -3,7 +3,7 @@
 #include <complex>
 #include <vector>
 
-const int ParallelRecusionThreshold = 16; // 16 best for GHC, 256 for PSC
+const int ParallelRecusionThreshold = 16; // 16 best for GHC, 64 for PSC
 
 template <bool inverse>
 void fft_rec_helper(std::vector<std::complex<double>> &vec) {
