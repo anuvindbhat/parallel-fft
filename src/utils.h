@@ -14,7 +14,7 @@ template <typename T> void assert_pow2(T v) {
 inline std::vector<std::complex<double>>
 to_complex(const std::vector<double> &vec) {
   std::vector<std::complex<double>> cvec(vec.size());
-  for (int i = 0; i < vec.size(); ++i) {
+  for (int i = 0; i < static_cast<int>(vec.size()); ++i) {
     cvec[i] = vec[i];
   }
   return cvec;
@@ -23,7 +23,7 @@ to_complex(const std::vector<double> &vec) {
 inline std::vector<double>
 to_reals(const std::vector<std::complex<double>> &cvec) {
   std::vector<double> vec(cvec.size());
-  for (int i = 0; i < vec.size(); ++i) {
+  for (int i = 0; i < static_cast<int>(vec.size()); ++i) {
     vec[i] = cvec[i].real();
   }
   return vec;
