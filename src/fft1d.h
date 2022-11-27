@@ -6,5 +6,6 @@
 
 template <bool inverse> void dft(std::vector<std::complex<double>> &vec);
 template <bool inverse> void fft_rec(std::vector<std::complex<double>> &vec);
+template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec);
 
 #endif

@@ -12,8 +12,8 @@ template <bool inverse> void dft(std::vector<std::complex<double>> &vec) {
   int n = vec.size();
   std::vector<std::complex<double>> result(n, 0);
   constexpr int flag = inverse ? 1 : -1;
-// TODO: do we need a pure serial version to call from the recursive FFT
-// implementation?
+// Won't have any effect when called from fft_rec since nested parallelism is
+// disabled
 #pragma omp parallel for schedule(static)
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
@@ -103,14 +103,13 @@ inline int bit_reverse(int n, int total_bits) {
   return rev;
 }
 
-template<bool inverse>
-void fft_iter(std::vector<std::complex<double>> &vec) {
+template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
   int n = vec.size();
   assert_pow2(n);
   // the total number of bits required to represent 0..n-1 since n is a power
   // of 2
   int total_bits = log2(n);
-  #pragma omp parallel for schedule(static)
+#pragma omp parallel for schedule(static)
   for (int i = 0; i < n; ++i) {
     int rev_i = bit_reverse(i, total_bits);
     // since bit_reverse(bit_reverse(i)) == i, i and bit_reverse(i) just need

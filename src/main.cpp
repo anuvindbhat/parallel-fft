@@ -5,6 +5,7 @@
 #include <fstream>
 #include <iostream>
 #include <numeric>
+#include <omp.h>
 #include <random>
 #include <vector>
 
@@ -57,6 +58,8 @@ void saveToFile(std::string fileName, std::vector<double> values) {
 }
 
 int main() {
+  // disable nested parallelism
+  omp_set_max_active_levels(1);
   int currDataSet = 4;
   int currThreadCount = 8; // Used only for generating and tracking output files
   int codeBlock = 0;       // which conditional code block to execute below
