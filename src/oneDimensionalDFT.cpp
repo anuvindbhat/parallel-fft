@@ -7,7 +7,7 @@
 #include <math.h>
 
 
-std::vector<std::complex<double>> discreteFourierTransform(std::vector<std::complex<double>> &data, bool invert) {
+void discreteFourierTransform(std::vector<std::complex<double>> &data, bool invert) {
     int inputSize = data.size();
     std::vector<std::complex<double>> result(inputSize);
     
@@ -24,6 +24,6 @@ std::vector<std::complex<double>> discreteFourierTransform(std::vector<std::comp
         std::complex<double> one(1.0);
         result[i] = accumulator * (invert ? inverse : one);
     }
-
-    return result;
+    
+    result.swap(data);
 }

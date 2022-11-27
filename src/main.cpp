@@ -8,7 +8,9 @@
 #include <random>
 #include <fstream>
 
-int allSizes[4] = {100, 10000, 250000, 1000000};
+int allSizes[8] = {1 << 3, 1 << 10, 1 << 12, 1 << 14, 1 << 15, 
+                    1 << 17, 1 << 19, 1 << 20}; // 3 data sets for FFT only
+
 
 void generate() {
   for (int number : allSizes) {
@@ -56,39 +58,33 @@ void saveToFile(std::string fileName, std::vector<double> values) {
 }
 
 int main() {
-  {
-    Timer<std::chrono::milliseconds> t("One Dimensional DFT");
+  int currDataSet = 4;
+  int currThreadCount = 8; // Used only for generating and tracking output files
+  int codeBlock = 0; // which conditional code block to execute below
+  bool resultToFile = false;
 
-    // Parallilized DFT below
+  std::vector<double> input = loadFromFile("data_" + std::to_string(allSizes[currDataSet]) + ".txt");
 
-    std::vector<double> input = loadFromFile("data_10000.txt");
+  std::vector<std::complex<double>> newInput = to_complex(input);
 
-    std::vector<std::complex<double>> newInput = to_complex(input);
+  if (codeBlock == 0) {
+    Timer<std::chrono::milliseconds> t("Parallelized DFT");
+
+    discreteFourierTransform(newInput);
+    discreteFourierTransform(newInput, true);
+    std::vector<double> actual = to_reals(newInput);
+
+    if (resultToFile) saveToFile("data_" + std::to_string(allSizes[currDataSet]) + "_out_DFT_T" + std::to_string(currThreadCount) + ".txt", actual);
 
 
-    std::vector<std::complex<double>> result = discreteFourierTransform(newInput);
+  } else if (codeBlock ==  1) {
+    Timer<std::chrono::milliseconds> t("Parallelized Recursive FFT With Threshold");
 
-    std::vector<double> actual = to_reals(discreteFourierTransform(result, true));
+    fft_rec<false>(newInput);
+    fft_rec<true>(newInput);
+    std::vector<double> actual = to_reals(newInput);
 
-    saveToFile("data_10000_out.txt", actual);
-
-
-    // Recursive FFT below
-
-    int n = 1 << 20;
-    std::vector<double> vec(n);
-    std::iota(vec.begin(), vec.end(), 0);
-    std::cout << "Initial: " << std::vector(vec.begin(), vec.begin() + 10)
-              << "\n";
-    auto cvec = to_complex(vec);
-    // std::cout << "Before FFT: " << cvec << "\n";
-    fft_rec<false>(cvec);
-    // std::cout << "After FFT: " << cvec << "\n";
-    fft_rec<true>(cvec);
-    // std::cout << "After FFT-inv: " << cvec << "\n";
-    vec = to_reals(cvec);
-    std::cout << "Final: " << std::vector(vec.begin(), vec.begin() + 10)
-              << "\n";
+    if (resultToFile) saveToFile("data_" + std::to_string(allSizes[currDataSet]) + "_out_FFT_T" + std::to_string(currThreadCount) + ".txt", actual);
   }
   return 0;
 }

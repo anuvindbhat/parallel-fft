@@ -30,7 +30,7 @@ public:
       // https://stackoverflow.com/questions/53945490
       static_assert(always_false<T>, "Unsupported duration");
     }
-    cout << m_name << ": " << dur.count() << " " << suffix << "\n";
+    cout << dur.count() << ", ";
   }
 
 private:

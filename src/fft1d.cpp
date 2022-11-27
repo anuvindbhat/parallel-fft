@@ -3,11 +3,19 @@
 #include <complex>
 #include <vector>
 
+const int ParallelRecusionThreshold = 16; // 16 best for GHC, 256 for PSC
+
 template <bool inverse>
 void fft_rec_helper(std::vector<std::complex<double>> &vec) {
   auto n = vec.size();
   assert_pow2(n);
-  if (n == 1) {
+  if (n <= ParallelRecusionThreshold) {
+    if (n == 1) return;
+    if constexpr (inverse) {
+      discreteFourierTransform(vec, true);
+    } else {
+      discreteFourierTransform(vec, false);
+    }
     return;
   }
   std::vector<std::complex<double>> even(n / 2), odd(n / 2);

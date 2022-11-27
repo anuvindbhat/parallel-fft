@@ -1,0 +1,192 @@
+Threshold: 1
+=====================
+# started on Sun Nov 27 01:56:15 2022
+
+
+ Performance counter stats for './fft.out':
+
+        25,256,363      cache-misses              #    3.247 % of all cache refs    
+       777,905,971      cache-references                                            
+
+       1.664068296 seconds time elapsed
+
+       8.847239000 seconds user
+       0.191291000 seconds sys
+
+
+Threshold: 2
+=====================
+# started on Sun Nov 27 01:56:18 2022
+
+
+ Performance counter stats for './fft.out':
+
+        25,280,748      cache-misses              #    5.705 % of all cache refs    
+       443,158,970      cache-references                                            
+
+       1.097973517 seconds time elapsed
+
+       4.989888000 seconds user
+       0.215908000 seconds sys
+
+
+Threshold: 4
+=====================
+# started on Sun Nov 27 01:56:21 2022
+
+
+ Performance counter stats for './fft.out':
+
+        25,143,400      cache-misses              #   12.087 % of all cache refs    
+       208,018,339      cache-references                                            
+
+       0.797094413 seconds time elapsed
+
+       2.792821000 seconds user
+       0.106505000 seconds sys
+
+
+Threshold: 8
+=====================
+# started on Sun Nov 27 01:56:23 2022
+
+
+ Performance counter stats for './fft.out':
+
+        25,362,767      cache-misses              #   24.654 % of all cache refs    
+       102,873,483      cache-references                                            
+
+       0.686790543 seconds time elapsed
+
+       1.943970000 seconds user
+       0.076155000 seconds sys
+
+
+Threshold: 16
+=====================
+# started on Sun Nov 27 01:56:25 2022
+
+
+ Performance counter stats for './fft.out':
+
+        25,637,331      cache-misses              #   36.193 % of all cache refs    
+        70,834,695      cache-references                                            
+
+       0.702647285 seconds time elapsed
+
+       2.110006000 seconds user
+       0.048599000 seconds sys
+
+
+Threshold: 32
+=====================
+# started on Sun Nov 27 01:56:27 2022
+
+
+ Performance counter stats for './fft.out':
+
+        25,729,234      cache-misses              #   38.661 % of all cache refs    
+        66,551,479      cache-references                                            
+
+       0.795745871 seconds time elapsed
+
+       2.753545000 seconds user
+       0.059343000 seconds sys
+
+
+Threshold: 48
+=====================
+# started on Sun Nov 27 01:56:29 2022
+
+
+ Performance counter stats for './fft.out':
+
+        25,297,800      cache-misses              #   37.909 % of all cache refs    
+        66,733,035      cache-references                                            
+
+       0.790737080 seconds time elapsed
+
+       2.764288000 seconds user
+       0.031957000 seconds sys
+
+
+Threshold: 64
+=====================
+# started on Sun Nov 27 01:56:31 2022
+
+
+ Performance counter stats for './fft.out':
+
+        25,278,294      cache-misses              #   39.488 % of all cache refs    
+        64,015,335      cache-references                                            
+
+       0.980040030 seconds time elapsed
+
+       4.319537000 seconds user
+       0.107490000 seconds sys
+
+
+Threshold: 128
+=====================
+# started on Sun Nov 27 01:56:33 2022
+
+
+ Performance counter stats for './fft.out':
+
+        25,972,566      cache-misses              #   40.684 % of all cache refs    
+        63,839,967      cache-references                                            
+
+       1.407461474 seconds time elapsed
+
+       7.416221000 seconds user
+       0.091903000 seconds sys
+
+
+Threshold: 256
+=====================
+# started on Sun Nov 27 01:56:36 2022
+
+
+ Performance counter stats for './fft.out':
+
+        25,043,086      cache-misses              #   39.477 % of all cache refs    
+        63,437,771      cache-references                                            
+
+       2.219524857 seconds time elapsed
+
+      13.134304000 seconds user
+       0.051914000 seconds sys
+
+
+Threshold: 512
+=====================
+# started on Sun Nov 27 01:56:40 2022
+
+
+ Performance counter stats for './fft.out':
+
+        25,599,588      cache-misses              #   40.897 % of all cache refs    
+        62,595,718      cache-references                                            
+
+       3.488688624 seconds time elapsed
+
+      24.383994000 seconds user
+       0.031947000 seconds sys
+
+
+Threshold: 1024
+=====================
+# started on Sun Nov 27 01:56:44 2022
+
+
+ Performance counter stats for './fft.out':
+
+        25,028,742      cache-misses              #   40.079 % of all cache refs    
+        62,448,717      cache-references                                            
+
+       6.747542260 seconds time elapsed
+
+      47.196544000 seconds user
+       0.047955000 seconds sys
+
+
