@@ -33,7 +33,7 @@ template void dft<true>(std::vector<std::complex<double>> &vec);
 
 template <bool inverse>
 void fft_rec_helper(std::vector<std::complex<double>> &vec) {
-  auto n = vec.size();
+  int n = vec.size();
   assert_pow2(n);
   if (n == 1) {
     return;
