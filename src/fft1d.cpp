@@ -42,13 +42,19 @@ void fft_rec_helper(std::vector<std::complex<double>> &vec) {
     dft<inverse>(vec);
     return;
   }
-  std::vector<std::complex<double>> even(n / 2), odd(n / 2);
+  std::vector<std::complex<double>> even, odd;
+#pragma omp task default(shared) untied
+  {
+    even.resize(n / 2);
+    for (int i = 0; i < n / 2; ++i) {
+      even[i] = vec[2 * i];
+    }
+    fft_rec_helper<inverse>(even);
+  }
+  odd.resize(n / 2);
   for (int i = 0; i < n / 2; ++i) {
-    even[i] = vec[2 * i];
     odd[i] = vec[2 * i + 1];
   }
-#pragma omp task default(shared) untied
-  { fft_rec_helper<inverse>(even); }
   fft_rec_helper<inverse>(odd);
 #pragma omp taskwait
   constexpr int flag = inverse ? 1 : -1;
