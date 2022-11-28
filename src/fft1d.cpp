@@ -113,7 +113,7 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
 #pragma omp parallel for schedule(static)
     for (int j = 0; j < n; j += len) {
       for (int i = 0; i < len / 2; ++i) {
-        std::complex<double> currw = std::polar(1.0, flag * 2 * pi * i / n);
+        std::complex<double> currw = std::polar(1.0, flag * 2 * pi * i / len);
         int even_i = j + i;
         int odd_i = j + i + len / 2;
         // we can overwrite in-place since result[i] and result[i + n / 2] only
