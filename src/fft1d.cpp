@@ -110,8 +110,30 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
     }
   }
   constexpr int flag = inverse ? 1 : -1;
+  // we can precompute the powers of the different roots of unity that are
+  // required instead of computing them repeatedly on the fly
+  // NOTE: tested and verified that it's more efficient to retrieve the
+  //   precomputed value than recompute every time; w is accessed with good
+  //   spatial locality
+  std::vector<std::complex<double>> w(n - 1);
+  if constexpr (false) {
+    // this reference implementation isn't easy to parallelize well; just left
+    // it here for reference
+    for (int len = 2; len <= n; len *= 2) {
+      for (int i = 0; i < len / 2; ++i) {
+        w[len / 2 + i - 1] = std::polar(1.0, flag * 2 * pi * i / len);
+      }
+    }
+  }
+  #pragma omp parallel for schedule(static)
+  for (int j = 1; j < n; ++j) {
+    int temp = 1 << log2(j);
+    int len = 2 * temp;
+    int i = j - temp;
+    w[j - 1] = std::polar(1.0, flag * 2 * pi * i / len);
+  }
   // how many elements of vec fit in the L1 cache (possibly L2)
-  int cache_size = std::min(n, 1 << 15);
+  int cache_size = std::min(n, 1 << 14);
 #pragma omp parallel for schedule(static)
   for (int jb = 0; jb < n; jb += cache_size) {
     // for chunks that fit in the cache, perform FFT for the entire chunk
@@ -120,8 +142,9 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
     for (int len = 2; len <= cache_size; len *= 2) {
       for (int j = jb; j < jb + cache_size; j += len) {
         for (int i = 0; i < len / 2; ++i) {
-          std::complex<double> currw =
-              std::polar(1.0, flag * 2 * pi * i / len);
+          // std::complex<double> currw =
+          //     std::polar(1.0, flag * 2 * pi * i / len);
+          auto currw = w[len / 2 + i - 1];
           int even_i = j + i;
           int odd_i = j + i + len / 2;
           auto even = vec[even_i];
@@ -142,7 +165,8 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
 #pragma omp parallel for schedule(static)
     for (int j = 0; j < n; j += len) {
       for (int i = 0; i < len / 2; ++i) {
-        std::complex<double> currw = std::polar(1.0, flag * 2 * pi * i / len);
+        // std::complex<double> currw = std::polar(1.0, flag * 2 * pi * i / len);
+        auto currw = w[len / 2 + i - 1];
         int even_i = j + i;
         int odd_i = j + i + len / 2;
         // we can overwrite in-place since result[i] and result[i + n / 2] only
