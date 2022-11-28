@@ -8,7 +8,7 @@
 // 1 << 4 for GHC, 1 << 6 for PSC
 inline constexpr int recursion_threshold = 1 << 4;
 // 1 << 14 for GHC
-inline constexpr int complex_in_cache = 1 << 14;
+inline constexpr int iters_in_cache = 1 << 14;
 
 template <bool inverse> void dft(std::vector<std::complex<double>> &vec) {
   int n = vec.size();
@@ -149,6 +149,8 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
     int i = j - temp;
     w[j - 1] = std::polar(1.0, flag * 2 * pi * i / len);
   }
+  // putting the entire inner loop in the lambda doesn't seem to make a
+  // difference (compiler probably inlines this)
   auto loop_body = [&vec, &w](int len, int j, int i) {
     // auto currw = std::polar(1.0, flag * 2 * pi * i / len);
     auto currw = w[len / 2 + i - 1];
@@ -168,8 +170,9 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
       vec[odd_i] /= 2;
     }
   };
-  // how many elements of vec and w fit in the L1 cache (possibly L2)
-  int cache_size = std::min(n, complex_in_cache);
+  // how many iterations of the inner loop worth of data (vec and w) fit in the
+  // L1 cache (possibly L2)
+  int cache_size = std::min(n, iters_in_cache);
 #pragma omp parallel for schedule(static)
   for (int jb = 0; jb < n; jb += cache_size) {
     // for chunks that fit in the cache, perform FFT for the entire chunk
