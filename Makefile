@@ -1,4 +1,4 @@
-CFLAGS := -std=c++17 -fvisibility=hidden -lpthread -O3 -fopenmp -march=native
+CFLAGS := -std=c++17 -fvisibility=hidden -lpthread -O2 -fopenmp
 CFLAGS += -Wall -Wextra -Werror
 
 SOURCES := src/*.cpp

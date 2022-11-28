@@ -27,11 +27,6 @@ template <bool inverse> void dft(std::vector<std::complex<double>> &vec) {
   vec = std::move(result);
 }
 
-// instantiate here since the template definition is in the cpp file instead
-// of the header file
-template void dft<false>(std::vector<std::complex<double>> &vec);
-template void dft<true>(std::vector<std::complex<double>> &vec);
-
 template <bool inverse>
 void fft_rec_helper(std::vector<std::complex<double>> &vec) {
   int n = vec.size();
@@ -79,13 +74,8 @@ template <bool inverse> void fft_rec(std::vector<std::complex<double>> &vec) {
   { fft_rec_helper<inverse>(vec); }
 }
 
-// instantiate here since the template definition is in the cpp file instead
-// of the header file
-template void fft_rec<false>(std::vector<std::complex<double>> &vec);
-template void fft_rec<true>(std::vector<std::complex<double>> &vec);
-
 inline int log2(int n) {
-  int ret = 0;
+  int ret = -1;
   while (n != 0) {
     ++ret;
     n >>= 1;
@@ -118,4 +108,37 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
       std::swap(vec[i], vec[rev_i]);
     }
   }
+  constexpr int flag = inverse ? 1 : -1;
+  for (int len = 2; len <= n; len *= 2) {
+#pragma omp parallel for schedule(static)
+    for (int j = 0; j < n; j += len) {
+      for (int i = 0; i < len / 2; ++i) {
+        std::complex<double> currw = std::polar(1.0, flag * 2 * pi * i / n);
+        int even_i = j + i;
+        int odd_i = j + i + len / 2;
+        // we can overwrite in-place since result[i] and result[i + n / 2] only
+        // depend on input[i] and input[i + n / 2] i.e. an iteration of the i
+        // loop only depends on the values that it modifies
+        auto even = vec[even_i];
+        auto odd = vec[odd_i];
+        vec[even_i] = even + currw * odd;
+        vec[odd_i] = even - currw * odd;
+        // we can also just divide each element by n at the very end
+        // we do this to mimic the recursive implementation
+        if constexpr (inverse) {
+          vec[even_i] /= 2;
+          vec[odd_i] /= 2;
+        }
+      }
+    }
+  }
 }
+
+// instantiate here since the template definition is in the cpp file instead
+// of the header file
+template void dft<false>(std::vector<std::complex<double>> &vec);
+template void dft<true>(std::vector<std::complex<double>> &vec);
+template void fft_rec<false>(std::vector<std::complex<double>> &vec);
+template void fft_rec<true>(std::vector<std::complex<double>> &vec);
+template void fft_iter<false>(std::vector<std::complex<double>> &vec);
+template void fft_iter<true>(std::vector<std::complex<double>> &vec);
