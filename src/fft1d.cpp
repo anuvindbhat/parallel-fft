@@ -23,7 +23,7 @@ template <bool inverse> void dft(std::vector<std::complex<double>> &vec) {
   for (int i = 0; i < n; ++i) {
     w[i] = std::polar(1.0, flag * 2 * pi * i / n);
   }
-// Won't have any effect when called from fft_rec since nested parallelism is
+// won't have any effect when called from fft_rec since nested parallelism is
 // disabled
 #pragma omp parallel for schedule(static)
   for (int i = 0; i < n; ++i) {
