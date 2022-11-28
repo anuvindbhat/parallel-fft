@@ -125,8 +125,8 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
     }
   }
   constexpr int flag = inverse ? 1 : -1;
-  // we can precompute the powers of the different roots of unity that are
-  // required instead of computing them repeatedly on the fly
+  // we can precompute the powers of the different primitive roots of unity
+  // that are required instead of computing them repeatedly on the fly
   // NOTE: tested and verified that it's more efficient to retrieve the
   //   precomputed value than recompute every time; w is accessed with good
   //   spatial locality
