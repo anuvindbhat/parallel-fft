@@ -166,7 +166,7 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
       vec[odd_i] /= 2;
     }
   };
-  // how many elements of vec fit in the L1 cache (possibly L2)
+  // how many elements of vec and w fit in the L1 cache (possibly L2)
   int cache_size = std::min(n, 1 << 14);
 #pragma omp parallel for schedule(static)
   for (int jb = 0; jb < n; jb += cache_size) {
