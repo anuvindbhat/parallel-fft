@@ -26,6 +26,7 @@ template <bool inverse> void dft(std::vector<std::complex<double>> &vec) {
 #pragma omp parallel for schedule(static)
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
+      // auto currw = std::polar(1.0, flag * 2 * pi * i * j / n);
       auto currw = w[(i * j) % n];
       result[i] += vec[j] * currw;
     }
@@ -68,7 +69,7 @@ void fft_rec_helper(std::vector<std::complex<double>> &vec) {
 #pragma omp taskwait
   constexpr int flag = inverse ? 1 : -1;
   for (int i = 0; i < n / 2; ++i) {
-    std::complex<double> currw = std::polar(1.0, flag * 2 * pi * i / n);
+    auto currw = std::polar(1.0, flag * 2 * pi * i / n);
     vec[i] = even[i] + currw * odd[i];
     vec[n / 2 + i] = even[i] - currw * odd[i];
     if constexpr (inverse) {
@@ -156,8 +157,7 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
     for (int len = 2; len <= cache_size; len *= 2) {
       for (int j = jb; j < jb + cache_size; j += len) {
         for (int i = 0; i < len / 2; ++i) {
-          // std::complex<double> currw =
-          //     std::polar(1.0, flag * 2 * pi * i / len);
+          // auto currw = std::polar(1.0, flag * 2 * pi * i / len);
           auto currw = w[len / 2 + i - 1];
           int even_i = j + i;
           int odd_i = j + i + len / 2;
@@ -179,7 +179,7 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
 #pragma omp parallel for schedule(static)
     for (int j = 0; j < n; j += len) {
       for (int i = 0; i < len / 2; ++i) {
-        // std::complex<double> currw = std::polar(1.0, flag * 2 * pi * i / len);
+        // auto currw = std::polar(1.0, flag * 2 * pi * i / len);
         auto currw = w[len / 2 + i - 1];
         int even_i = j + i;
         int odd_i = j + i + len / 2;
