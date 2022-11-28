@@ -3,6 +3,7 @@
 
 #include <cassert>
 #include <complex>
+#include <cstdint>
 #include <vector>
 
 inline constexpr double pi = 3.14159265358979323846;
@@ -14,7 +15,7 @@ template <typename T> void assert_pow2(T v) {
 inline std::vector<std::complex<double>>
 to_complex(const std::vector<double> &vec) {
   std::vector<std::complex<double>> cvec(vec.size());
-  for (int i = 0; i < static_cast<int>(vec.size()); ++i) {
+  for (int32_t i = 0; i < static_cast<int32_t>(vec.size()); ++i) {
     cvec[i] = vec[i];
   }
   return cvec;
@@ -23,7 +24,7 @@ to_complex(const std::vector<double> &vec) {
 inline std::vector<double>
 to_reals(const std::vector<std::complex<double>> &cvec) {
   std::vector<double> vec(cvec.size());
-  for (int i = 0; i < static_cast<int>(vec.size()); ++i) {
+  for (int32_t i = 0; i < static_cast<int32_t>(vec.size()); ++i) {
     vec[i] = cvec[i].real();
   }
   return vec;
@@ -31,9 +32,9 @@ to_reals(const std::vector<std::complex<double>> &cvec) {
 
 template <typename T>
 std::ostream &operator<<(std::ostream &os, const std::vector<T> &vec) {
-  int n = vec.size();
+  int32_t n = vec.size();
   os << '[';
-  for (int i = 0; i < n; ++i) {
+  for (int32_t i = 0; i < n; ++i) {
     os << vec[i];
     if (i != n - 1) {
       os << ", ";

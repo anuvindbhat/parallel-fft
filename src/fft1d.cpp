@@ -2,34 +2,35 @@
 #include "utils.h"
 #include <algorithm>
 #include <complex>
+#include <cstdint>
 #include <utility>
 #include <vector>
 
 // 1 << 4 for GHC, 1 << 6 for PSC
-inline constexpr int recursion_threshold = 1 << 4;
+inline constexpr int32_t recursion_threshold = 1 << 4;
 // 1 << 14 for GHC
-inline constexpr int iters_in_cache = 1 << 14;
+inline constexpr int32_t iters_in_cache = 1 << 14;
 
 template <bool inverse> void dft(std::vector<std::complex<double>> &vec) {
-  int n = vec.size();
+  int32_t n = vec.size();
   std::vector<std::complex<double>> result(n, 0);
-  constexpr int flag = inverse ? 1 : -1;
+  constexpr int32_t flag = inverse ? 1 : -1;
   // precompute the roots since it is much more efficient to retrieve
   // precomputed values than compute them repeatedly on the fly especially
   // when the data fits in the cache
   // since DFT is quadratic, we'll only be using it for small inputs anyway
   std::vector<std::complex<double>> w(n);
 #pragma omp parallel for schedule(static)
-  for (int i = 0; i < n; ++i) {
+  for (int32_t i = 0; i < n; ++i) {
     w[i] = std::polar(1.0, flag * 2 * pi * i / n);
   }
 // won't have any effect when called from fft_rec since nested parallelism is
 // disabled
 #pragma omp parallel for schedule(static)
-  for (int i = 0; i < n; ++i) {
-    for (int j = 0; j < n; ++j) {
+  for (int32_t i = 0; i < n; ++i) {
+    for (int32_t j = 0; j < n; ++j) {
       // auto currw = std::polar(1.0, flag * 2 * pi * i * j / n);
-      auto currw = w[(static_cast<long>(i) * j) % n];
+      auto currw = w[(static_cast<int64_t>(i) * j) % n];
       result[i] += vec[j] * currw;
     }
     if constexpr (inverse) {
@@ -41,7 +42,7 @@ template <bool inverse> void dft(std::vector<std::complex<double>> &vec) {
 
 template <bool inverse>
 void fft_rec_helper(std::vector<std::complex<double>> &vec) {
-  int n = vec.size();
+  int32_t n = vec.size();
   assert_pow2(n);
   if (n == 1) {
     return;
@@ -58,19 +59,19 @@ void fft_rec_helper(std::vector<std::complex<double>> &vec) {
     // initialize even array inside the task for better parallelism/speedup
     // at the expense of more total work
     even.resize(n / 2);
-    for (int i = 0; i < n / 2; ++i) {
+    for (int32_t i = 0; i < n / 2; ++i) {
       even[i] = vec[2 * i];
     }
     fft_rec_helper<inverse>(even);
   }
   odd.resize(n / 2);
-  for (int i = 0; i < n / 2; ++i) {
+  for (int32_t i = 0; i < n / 2; ++i) {
     odd[i] = vec[2 * i + 1];
   }
   fft_rec_helper<inverse>(odd);
 #pragma omp taskwait
-  constexpr int flag = inverse ? 1 : -1;
-  for (int i = 0; i < n / 2; ++i) {
+  constexpr int32_t flag = inverse ? 1 : -1;
+  for (int32_t i = 0; i < n / 2; ++i) {
     auto currw = std::polar(1.0, flag * 2 * pi * i / n);
     vec[i] = even[i] + currw * odd[i];
     vec[n / 2 + i] = even[i] - currw * odd[i];
@@ -92,8 +93,8 @@ template <bool inverse> void fft_rec(std::vector<std::complex<double>> &vec) {
   { fft_rec_helper<inverse>(vec); }
 }
 
-inline int floor_log2(int n) {
-  int ret = -1;
+inline int32_t floor_log2(int32_t n) {
+  int32_t ret = -1;
   while (n != 0) {
     ++ret;
     n >>= 1;
@@ -101,9 +102,9 @@ inline int floor_log2(int n) {
   return ret;
 }
 
-inline int bit_reverse(int n, int total_bits) {
-  int rev = 0;
-  for (int i = 0; i < total_bits; ++i) {
+inline int32_t bit_reverse(int32_t n, int32_t total_bits) {
+  int32_t rev = 0;
+  for (int32_t i = 0; i < total_bits; ++i) {
     if (((1 << i) & n) != 0) {
       rev |= 1 << (total_bits - 1 - i);
     }
@@ -112,21 +113,21 @@ inline int bit_reverse(int n, int total_bits) {
 }
 
 template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
-  int n = vec.size();
+  int32_t n = vec.size();
   assert_pow2(n);
   // the total number of bits required to represent 0..n-1 since n is a power
   // of 2
-  int total_bits = floor_log2(n);
+  int32_t total_bits = floor_log2(n);
 #pragma omp parallel for schedule(static)
-  for (int i = 0; i < n; ++i) {
-    int rev_i = bit_reverse(i, total_bits);
+  for (int32_t i = 0; i < n; ++i) {
+    int32_t rev_i = bit_reverse(i, total_bits);
     // since bit_reverse(bit_reverse(i)) == i, i and bit_reverse(i) just need
     // to swap places to get the bit_reverse-sorted array
     if (i < rev_i) {
       std::swap(vec[i], vec[rev_i]);
     }
   }
-  constexpr int flag = inverse ? 1 : -1;
+  constexpr int32_t flag = inverse ? 1 : -1;
   // we can precompute the powers of the different primitive roots of unity
   // that are required instead of computing them repeatedly on the fly
   // NOTE: tested and verified that it's more efficient to retrieve the
@@ -136,25 +137,25 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
   if constexpr (false) {
     // this reference implementation isn't easy to parallelize well; just left
     // it here for reference
-    for (int len = 2; len <= n; len *= 2) {
-      for (int i = 0; i < len / 2; ++i) {
+    for (int32_t len = 2; len <= n; len *= 2) {
+      for (int32_t i = 0; i < len / 2; ++i) {
         w[len / 2 + i - 1] = std::polar(1.0, flag * 2 * pi * i / len);
       }
     }
   }
 #pragma omp parallel for schedule(static)
-  for (int j = 1; j < n; ++j) {
-    int temp = 1 << floor_log2(j);
-    int len = 2 * temp;
-    int i = j - temp;
+  for (int32_t j = 1; j < n; ++j) {
+    int32_t temp = 1 << floor_log2(j);
+    int32_t len = 2 * temp;
+    int32_t i = j - temp;
     w[j - 1] = std::polar(1.0, flag * 2 * pi * i / len);
   }
-  auto inner_loop = [&vec, &w](int len, int j) {
-    for (int i = 0; i < len / 2; ++i) {
+  auto inner_loop = [&vec, &w](int32_t len, int32_t j) {
+    for (int32_t i = 0; i < len / 2; ++i) {
       // auto currw = std::polar(1.0, flag * 2 * pi * i / len);
       auto currw = w[len / 2 + i - 1];
-      int even_i = j + i;
-      int odd_i = j + i + len / 2;
+      int32_t even_i = j + i;
+      int32_t odd_i = j + i + len / 2;
       // we can overwrite in-place since result[i] and result[i + n / 2] only
       // depend on input[i] and input[i + n / 2] i.e. an iteration of the i
       // loop only depends on the values that it modifies
@@ -172,23 +173,23 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
   };
   // how many iterations of the inner loop worth of data (vec and w) fit in the
   // L1 cache (possibly L2)
-  int cache_size = std::min(n, iters_in_cache);
+  int32_t cache_size = std::min(n, iters_in_cache);
 #pragma omp parallel for schedule(static)
-  for (int jb = 0; jb < n; jb += cache_size) {
+  for (int32_t jb = 0; jb < n; jb += cache_size) {
     // for chunks that fit in the cache, perform FFT for the entire chunk
     // before moving to the next chunk (good cache reuse since the chunk only
     // needs to be loaded in once)
-    for (int len = 2; len <= cache_size; len *= 2) {
-      for (int j = jb; j < jb + cache_size; j += len) {
+    for (int32_t len = 2; len <= cache_size; len *= 2) {
+      for (int32_t j = jb; j < jb + cache_size; j += len) {
         inner_loop(len, j);
       }
     }
   }
   // perform regular bottom-up FFT for the entire array once the chunks no
   // longer fit in the cache since bottom-up FFT has good spatial locality
-  for (int len = 2 * cache_size; len <= n; len *= 2) {
+  for (int32_t len = 2 * cache_size; len <= n; len *= 2) {
 #pragma omp parallel for schedule(static)
-    for (int j = 0; j < n; j += len) {
+    for (int32_t j = 0; j < n; j += len) {
       inner_loop(len, j);
     }
   }
