@@ -149,25 +149,25 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
     int i = j - temp;
     w[j - 1] = std::polar(1.0, flag * 2 * pi * i / len);
   }
-  // putting the entire inner loop in the lambda doesn't seem to make a
-  // difference (compiler probably inlines this)
-  auto loop_body = [&vec, &w](int len, int j, int i) {
-    // auto currw = std::polar(1.0, flag * 2 * pi * i / len);
-    auto currw = w[len / 2 + i - 1];
-    int even_i = j + i;
-    int odd_i = j + i + len / 2;
-    // we can overwrite in-place since result[i] and result[i + n / 2] only
-    // depend on input[i] and input[i + n / 2] i.e. an iteration of the i
-    // loop only depends on the values that it modifies
-    auto even = vec[even_i];
-    auto odd = vec[odd_i];
-    vec[even_i] = even + currw * odd;
-    vec[odd_i] = even - currw * odd;
-    // we can also just divide each element by n at the very end
-    // we divide here to mimic the recursive implementation
-    if constexpr (inverse) {
-      vec[even_i] /= 2;
-      vec[odd_i] /= 2;
+  auto inner_loop = [&vec, &w](int len, int j) {
+    for (int i = 0; i < len / 2; ++i) {
+      // auto currw = std::polar(1.0, flag * 2 * pi * i / len);
+      auto currw = w[len / 2 + i - 1];
+      int even_i = j + i;
+      int odd_i = j + i + len / 2;
+      // we can overwrite in-place since result[i] and result[i + n / 2] only
+      // depend on input[i] and input[i + n / 2] i.e. an iteration of the i
+      // loop only depends on the values that it modifies
+      auto even = vec[even_i];
+      auto odd = vec[odd_i];
+      vec[even_i] = even + currw * odd;
+      vec[odd_i] = even - currw * odd;
+      // we can also just divide each element by n at the very end
+      // we divide here to mimic the recursive implementation
+      if constexpr (inverse) {
+        vec[even_i] /= 2;
+        vec[odd_i] /= 2;
+      }
     }
   };
   // how many iterations of the inner loop worth of data (vec and w) fit in the
@@ -180,9 +180,7 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
     // needs to be loaded in once)
     for (int len = 2; len <= cache_size; len *= 2) {
       for (int j = jb; j < jb + cache_size; j += len) {
-        for (int i = 0; i < len / 2; ++i) {
-          loop_body(len, j, i);
-        }
+        inner_loop(len, j);
       }
     }
   }
@@ -191,9 +189,7 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
   for (int len = 2 * cache_size; len <= n; len *= 2) {
 #pragma omp parallel for schedule(static)
     for (int j = 0; j < n; j += len) {
-      for (int i = 0; i < len / 2; ++i) {
-        loop_body(len, j, i);
-      }
+      inner_loop(len, j);
     }
   }
   // could alternatively have done this instead of dividing by 2 at every
