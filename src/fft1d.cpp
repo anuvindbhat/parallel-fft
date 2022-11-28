@@ -87,7 +87,7 @@ void fft_rec_helper(std::vector<std::complex<double>> &vec) {
 }
 
 template <bool inverse> void fft_rec(std::vector<std::complex<double>> &vec) {
-#pragma omp parallel default(shared)
+#pragma omp parallel
 #pragma omp single nowait
   { fft_rec_helper<inverse>(vec); }
 }
