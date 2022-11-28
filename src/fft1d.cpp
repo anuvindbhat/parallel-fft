@@ -110,6 +110,7 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
     }
   }
   constexpr int flag = inverse ? 1 : -1;
+  // how many elements of vec fit in the L1 cache (possibly L2)
   int cache_size = std::min(n, 1 << 15);
 #pragma omp parallel for schedule(static)
   for (int jb = 0; jb < n; jb += cache_size) {
@@ -156,7 +157,7 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
     }
   }
   // could alternatively have done this instead of dividing by 2 at every
-  // stage
+  // stage (this is obviously faster)
   if constexpr (false) {
 #pragma omp parallel for schedule(static)
     for (auto &v : vec) {
