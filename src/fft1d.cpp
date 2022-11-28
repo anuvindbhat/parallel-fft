@@ -43,7 +43,8 @@ void fft_rec_helper(std::vector<std::complex<double>> &vec) {
   std::vector<std::complex<double>> even, odd;
 #pragma omp task default(shared) untied
   {
-    // initialize even array inside the task for better parallelism
+    // initialize even array inside the task for better parallelism/speedup
+    // at the expense of more total work
     even.resize(n / 2);
     for (int i = 0; i < n / 2; ++i) {
       even[i] = vec[2 * i];
@@ -109,7 +110,29 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
     }
   }
   constexpr int flag = inverse ? 1 : -1;
-  for (int len = 2; len <= n; len *= 2) {
+  int cache_size = std::min(n, 1 << 15);
+#pragma omp parallel for schedule(static)
+  for (int jb = 0; jb < n; jb += cache_size) {
+    for (int len = 2; len <= cache_size; len *= 2) {
+      for (int j = jb; j < jb + cache_size; j += len) {
+        for (int i = 0; i < len / 2; ++i) {
+          std::complex<double> currw =
+              std::polar(1.0, flag * 2 * pi * i / len);
+          int even_i = j + i;
+          int odd_i = j + i + len / 2;
+          auto even = vec[even_i];
+          auto odd = vec[odd_i];
+          vec[even_i] = even + currw * odd;
+          vec[odd_i] = even - currw * odd;
+          if constexpr (inverse) {
+            vec[even_i] /= 2;
+            vec[odd_i] /= 2;
+          }
+        }
+      }
+    }
+  }
+  for (int len = 2 * cache_size; len <= n; len *= 2) {
 #pragma omp parallel for schedule(static)
     for (int j = 0; j < n; j += len) {
       for (int i = 0; i < len / 2; ++i) {
@@ -124,12 +147,20 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
         vec[even_i] = even + currw * odd;
         vec[odd_i] = even - currw * odd;
         // we can also just divide each element by n at the very end
-        // we do this to mimic the recursive implementation
+        // we divide here to mimic the recursive implementation
         if constexpr (inverse) {
           vec[even_i] /= 2;
           vec[odd_i] /= 2;
         }
       }
+    }
+  }
+  // could alternatively have done this instead of dividing by 2 at every
+  // stage
+  if constexpr (false) {
+#pragma omp parallel for schedule(static)
+    for (auto &v : vec) {
+      v /= n;
     }
   }
 }
