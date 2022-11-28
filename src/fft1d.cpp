@@ -114,6 +114,9 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
   int cache_size = std::min(n, 1 << 15);
 #pragma omp parallel for schedule(static)
   for (int jb = 0; jb < n; jb += cache_size) {
+    // for chunks that fit in the cache, perform FFT for the entire chunk
+    // before moving to the next chunk (good cache reuse since the chunk only
+    // needs to be loaded in once)
     for (int len = 2; len <= cache_size; len *= 2) {
       for (int j = jb; j < jb + cache_size; j += len) {
         for (int i = 0; i < len / 2; ++i) {
@@ -133,6 +136,8 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
       }
     }
   }
+  // perform regular bottom-up FFT for the entire array once the chunks no
+  // longer fit in the cache since bottom-up FFT has good spatial locality
   for (int len = 2 * cache_size; len <= n; len *= 2) {
 #pragma omp parallel for schedule(static)
     for (int j = 0; j < n; j += len) {
