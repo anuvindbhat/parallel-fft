@@ -29,7 +29,7 @@ template <bool inverse> void dft(std::vector<std::complex<double>> &vec) {
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
       // auto currw = std::polar(1.0, flag * 2 * pi * i * j / n);
-      auto currw = w[(i * j) % n];
+      auto currw = w[(static_cast<long>(i) * j) % n];
       result[i] += vec[j] * currw;
     }
     if constexpr (inverse) {
