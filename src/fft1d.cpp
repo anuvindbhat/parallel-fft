@@ -90,7 +90,7 @@ template <bool inverse> void fft_rec(std::vector<std::complex<double>> &vec) {
   { fft_rec_helper<inverse>(vec); }
 }
 
-inline int log2(int n) {
+inline int floor_log2(int n) {
   int ret = -1;
   while (n != 0) {
     ++ret;
@@ -114,7 +114,7 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
   assert_pow2(n);
   // the total number of bits required to represent 0..n-1 since n is a power
   // of 2
-  int total_bits = log2(n);
+  int total_bits = floor_log2(n);
 #pragma omp parallel for schedule(static)
   for (int i = 0; i < n; ++i) {
     int rev_i = bit_reverse(i, total_bits);
@@ -142,7 +142,7 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
   }
 #pragma omp parallel for schedule(static)
   for (int j = 1; j < n; ++j) {
-    int temp = 1 << log2(j);
+    int temp = 1 << floor_log2(j);
     int len = 2 * temp;
     int i = j - temp;
     w[j - 1] = std::polar(1.0, flag * 2 * pi * i / len);
