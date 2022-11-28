@@ -12,12 +12,21 @@ template <bool inverse> void dft(std::vector<std::complex<double>> &vec) {
   int n = vec.size();
   std::vector<std::complex<double>> result(n, 0);
   constexpr int flag = inverse ? 1 : -1;
+  // precompute the roots since it is much more efficient to retrieve
+  // precomputed values than compute them repeatedly on the fly especially
+  // when the data fits in the cache
+  // since DFT is quadratic, we'll only be using it for small inputs anyway
+  std::vector<std::complex<double>> w(n);
+  #pragma omp parallel for schedule(static)
+  for (int i = 0; i < n; ++i) {
+    w[i] = std::polar(1.0, flag * 2 * pi * i / n);
+  }
 // Won't have any effect when called from fft_rec since nested parallelism is
 // disabled
 #pragma omp parallel for schedule(static)
   for (int i = 0; i < n; ++i) {
     for (int j = 0; j < n; ++j) {
-      auto currw = std::polar(1.0, flag * 2 * pi * i * j / n);
+      auto currw = w[(i * j) % n];
       result[i] += vec[j] * currw;
     }
     if constexpr (inverse) {
@@ -66,6 +75,11 @@ void fft_rec_helper(std::vector<std::complex<double>> &vec) {
       vec[i] /= 2;
       vec[n / 2 + i] /= 2;
     }
+    // it's more performant to iteratively update currw i.e. currw starts at
+    // 1.0 and multiply by wn every iteration where wn is
+    // std::polar(1.0, flag * 2 * pi / n)
+    // however, the numerical precision is much worse than using std::polar
+    // every iteration
   }
 }
 
