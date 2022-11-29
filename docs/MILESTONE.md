@@ -1,3 +1,9 @@
+---
+layout: page
+title: "Milestone Report"
+permalink: /milestone
+---
+
 Anuvind Bhat (`anuvindb`) & Saatvik Suryajit Korisepati (`skorisep`)
 
 ## **Schedule**
