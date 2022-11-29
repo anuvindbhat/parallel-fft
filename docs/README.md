@@ -42,7 +42,7 @@ Parallelize a recursive implementation of 1D FFT with OpenMP. Quantitatively ide
 
 We hope to utilize our new algorithm in the practical setting of image compression. If this step is completed, we will also analyze the performance and compare the results from naive and other image compression algorithms using FFT.
 
-We will also attempt to parallelize the 2D FFT implementation further by utilizing the “tiling” approach mentioned in Spiral Lab’s research.
+We will also attempt to optimize the 2D FFT implementation further by utilizing the “tiling” approach mentioned in Spiral Lab’s research.
 
 ### *Deliverables:*
 
@@ -50,7 +50,7 @@ We will predominantly be focusing on showing speedup graphs of our various imple
 
 ## **Platform Choice**
 
-We are going to be implementing the algorithm with a focus on parallelizing on CPUs. We made this decision as the research we explored focused on FFT computation on CPUs. Furthermore, as one of our stretch goals is to apply our algorithm to image compression, we find that a computer’s memory and shared memory machines are more than sufficient for the task. 
+We are going to be implementing the algorithm with a focus on parallelizing on CPUs. We made this decision as the research we explored focused on FFT computation on CPUs. Furthermore, as one of our stretch goals is to apply our algorithm to image compression, we find that a computer’s memory and shared memory machines are more than sufficient for the task.
 
 Since OpenMP can be used for parallelizing all the variants we want to implement (using tasks for the recursive variant), we decided on OpenMP as our framework.
 
