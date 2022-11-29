@@ -2,17 +2,20 @@
 layout: page
 title: "Milestone Report"
 permalink: /milestone
+show_downloads: false
+google_analytics:
+theme: jekyll-theme-hacker
 ---
 
 Anuvind Bhat (`anuvindb`) & Saatvik Suryajit Korisepati (`skorisep`)
 
 ## **Schedule**
 
-First half of 11/28:     Finish milestone report (Saatvik and Anuvind)
-Second half of 11/28:    Finish 2D FFT (comparing 2 ways of parallelizing and transpose optimization) (Saatvik then Anuvind)
-First half of 12/05:     Complete image processing (Saatvik then Anuvind)
-Second half of 12/05:    Complete write up and convert materials for presentation (Anuvind then Saatvik
-Week of 12/12:           Spillover (**not preferred**)
+First half of 11/28:     Finish milestone report (Saatvik and Anuvind)<br>
+Second half of 11/28:    Finish 2D FFT (comparing 2 ways of parallelizing and transpose optimization) (Saatvik then Anuvind)<br>
+First half of 12/05:     Complete image processing (Saatvik then Anuvind)<br>
+Second half of 12/05:    Complete write up and convert materials for presentation (Anuvind then Saatvik<br>
+Week of 12/12:           Spillover (**not preferred**)<br>
 
 ## **Summary**
 
