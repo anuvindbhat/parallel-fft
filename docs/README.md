@@ -107,6 +107,7 @@ The second chart below showcases the performance of three of our FFT implementat
 
 The third chart showcases the data we utilized to determine the threshold (below which we switched to using DFT) for our parallel recursive implementation of FFT.
 
+
 ![Graph of execution time for DFT implementation](dftTime.png)
 
 ![Graph of execution time for for all 1D FFT implementation](parallelImplementationsTime.png)
