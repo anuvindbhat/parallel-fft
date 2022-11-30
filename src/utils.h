@@ -30,6 +30,24 @@ to_reals(const std::vector<std::complex<double>> &cvec) {
   return vec;
 }
 
+inline std::vector<std::vector<std::complex<double>>>
+to_complex_2d(const std::vector<std::vector<double>> &vecs) {
+  std::vector<std::vector<std::complex<double>>> cvecs;
+  for (std::vector<double> vec : vecs) {
+    cvecs.push_back(to_complex(vec));
+  }
+  return cvecs;
+}
+
+inline std::vector<std::vector<double>>
+to_reals_2d(const std::vector<std::vector<std::complex<double>>> &cvecs) {
+  std::vector<std::vector<double>> vecs;
+  for (std::vector<std::complex<double>> cvec : cvecs) {
+    vecs.push_back(to_reals(cvec));
+  }
+  return vecs;
+}
+
 template <typename T>
 std::ostream &operator<<(std::ostream &os, const std::vector<T> &vec) {
   int32_t n = vec.size();
