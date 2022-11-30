@@ -1,5 +1,25 @@
 Anuvind Bhat (`anuvindb`) & Saatvik Suryajit Korisepati (`skorisep`)
 
+- [Project Proposal](#project-proposal)
+  - [**Summary**](#summary)
+  - [**Background**](#background)
+    - [*What is Fast Fourier Transform (FFT)?*](#what-is-fast-fourier-transform-fft)
+    - [*How can performance of FFT be improved and where can it be parallelized?*](#how-can-performance-of-fft-be-improved-and-where-can-it-be-parallelized)
+  - [**The Challenge**](#the-challenge)
+  - [**Resources**](#resources)
+  - [**Goals and Deliverables**](#goals-and-deliverables)
+    - [*Plan to achieve:*](#plan-to-achieve)
+    - [*Hope to achieve:*](#hope-to-achieve)
+    - [*Deliverables:*](#deliverables)
+  - [**Platform Choice**](#platform-choice)
+  - [**Schedule**](#schedule)
+- [Milestone Report](#milestone-report)
+  - [**Schedule - Milestone**](#schedule---milestone)
+  - [**Summary - Milestone**](#summary---milestone)
+  - [**Progress Regarding Goals and Deliverables**](#progress-regarding-goals-and-deliverables)
+  - [**Presentation Materials**](#presentation-materials)
+  - [**Preliminary Results**](#preliminary-results)
+
 ---
 
 # Project Proposal
@@ -60,6 +80,7 @@ We are going to be implementing the algorithm with a focus on parallelizing on C
 Since OpenMP can be used for parallelizing all the variants we want to implement (using tasks for the recursive variant), we decided on OpenMP as our framework.
 
 ## **Schedule**
+
 Note that we are targeting the early submission deadline of 12/9.<br>
 Week 1 (11/14): Complete proposal with concrete approaches for parallelism and improving memory bandwidth usage and begin sequential implementation <br>
 Week 2 (11/21): Parallelize recursive implementation (1D FFT), start cache-optimized iterative implementation and begin measuring results and bottlenecks (possibly try optimizations involving “chunking” in 1D FFT)<br>
@@ -71,7 +92,7 @@ Week 5 (12/12): Spillover in case we don’t meet the early deadline target
 
 # Milestone Report
 
-## **Schedule**
+## **Schedule - Milestone**
 
 First half of 11/28:     Finish milestone report (Saatvik and Anuvind)<br>
 Second half of 11/28:    Finish 2D FFT (comparing 2 ways of parallelizing and transpose optimization) (Anuvind then Saatvik)<br>
@@ -79,7 +100,7 @@ First half of 12/05:     Complete image processing (Saatvik then Anuvind)<br>
 Second half of 12/05:    Complete write up and convert materials for presentation (Anuvind then Saatvik)<br>
 Week of 12/12:           Spillover<br>
 
-## **Summary**
+## **Summary - Milestone**
 
 We have implemented, parallelized, and optimized 3 implementations of 1D DFT/FFT that we had set out to do.
 
