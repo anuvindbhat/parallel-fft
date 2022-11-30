@@ -3,14 +3,14 @@ Anuvind Bhat (`anuvindb`) & Saatvik Suryajit Korisepati (`skorisep`)
 - [Project Proposal](#project-proposal)
   - [**Summary**](#summary)
   - [**Background**](#background)
-    - [*What is Fast Fourier Transform (FFT)?*](#what-is-fast-fourier-transform-fft)
-    - [*How can performance of FFT be improved and where can it be parallelized?*](#how-can-performance-of-fft-be-improved-and-where-can-it-be-parallelized)
+    - [*What is FFT?*](#what-is-fft)
+    - [*Parallelizing FFT*](#parallelizing-fft)
   - [**The Challenge**](#the-challenge)
   - [**Resources**](#resources)
   - [**Goals and Deliverables**](#goals-and-deliverables)
-    - [*Plan to achieve:*](#plan-to-achieve)
-    - [*Hope to achieve:*](#hope-to-achieve)
-    - [*Deliverables:*](#deliverables)
+    - [*Plan to achieve*](#plan-to-achieve)
+    - [*Hope to achieve*](#hope-to-achieve)
+    - [*Deliverables*](#deliverables)
   - [**Platform Choice**](#platform-choice)
   - [**Schedule**](#schedule)
 - [Milestone Report](#milestone-report)
@@ -30,11 +30,11 @@ We are going to be parallelizing the one and two-dimensional versions of the Fas
 
 ## **Background**
 
-### *What is Fast Fourier Transform (FFT)?*
+### *What is FFT?*
 
-FFT is an algorithm, with roots in signal processing, for computing the so-called discrete Fourier transform (DFT) of a sequence of numbers. The naive approach to computing the DFT takes O(n<sup>2</sup>) time while FFT computes the result in O(n log (n)) time. In the context of signal processing, FFT is used to decompose a signal into sinusoidal curves with different amplitudes and frequencies. This is known as converting a signal from the time domain to the frequency domain.
+FFT (fast Fourier transform) is an algorithm, with roots in signal processing, for computing the so-called discrete Fourier transform (DFT) of a sequence of numbers. The naive approach to computing the DFT takes O(n<sup>2</sup>) time while FFT computes the result in O(n log (n)) time. In the context of signal processing, FFT is used to decompose a signal into sinusoidal curves with different amplitudes and frequencies. This is known as converting a signal from the time domain to the frequency domain.
 
-### *How can performance of FFT be improved and where can it be parallelized?*
+### *Parallelizing FFT*
 
 1D FFT is naturally recursive and also has very poor data locality making it a memory bound algorithm. We will be working to alleviate this problem by exploring butterfly networks and iterative implementations that have better cache locality. Available parallelism is similar in both the recursive and iterative approaches. For the recursive implementation, we will also explore using the quadratic DFT algorithm at high recursion depths as it has better locality.
 
@@ -59,17 +59,17 @@ We will refer to existing research on parallel FFT implementations. For example,
 
 ## **Goals and Deliverables**
 
-### *Plan to achieve:*
+### *Plan to achieve*
 
 Parallelize a recursive implementation of 1D FFT with OpenMP. Quantitatively identify bottlenecks and overhead in our parallel implementation and describe them with concepts learned in class. Explore switching to quadratic DFT at high recursion depths. Create another 1D implementation using the concept of butterfly networks and other optimizations (different code-path when data fits in cache) that are easier to perform on an iterative implementation to alleviate the memory bottleneck; parallelize this implementation. Compare the performance of the recursive and iterative approaches and explain any differences. Then we will implement 2D FFT using our 2 variants of 1D FFT. We will further optimize the memory access patterns (spatial locality) of 2D FFT using by transposing key intermediate results based on Spiral Lab’s research.
 
-### *Hope to achieve:*
+### *Hope to achieve*
 
 We hope to utilize our new algorithm in the practical setting of image compression. If this step is completed, we will also analyze the performance and compare the results from naive and other image compression algorithms using FFT.
 
 We will also attempt to optimize the 2D FFT implementation further by utilizing the “tiling” approach mentioned in Spiral Lab’s research.
 
-### *Deliverables:*
+### *Deliverables*
 
 We will predominantly be focusing on showing speedup graphs of our various implementations as well as other performance metrics that we measure. We will also be providing a detailed explanation of why our modifications provide improvements in speedup and locality (memory access). If time allows, we will either have a demo of the various stages in image compression or some images that illustrate them.
 
