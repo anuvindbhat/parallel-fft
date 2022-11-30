@@ -1,5 +1,7 @@
 Anuvind Bhat (`anuvindb`) & Saatvik Suryajit Korisepati (`skorisep`)
 
+---
+
 # Project Proposal
 
 ## **Summary**
