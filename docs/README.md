@@ -1,5 +1,7 @@
 Anuvind Bhat (`anuvindb`) & Saatvik Suryajit Korisepati (`skorisep`)
 
+# Project Proposal
+
 ## **Summary**
 
 We are going to be parallelizing the one and two-dimensional versions of the Fast Fourier Transform (FFT) algorithm with a focus on alleviating its bandwidth bottleneck. We will be focusing on parallelizing on a shared memory machine while utilizing OpenMP. This project is based on the findings from research conducted by Spiral Lab at CMU as well as additional research that we studied. Upon completing our implementation, we will be analyzing and comparing the performance improvement in terms of speedup, data movement, and data access of our FFT variants.
@@ -27,6 +29,7 @@ As we are starting from scratch with our implementation, we expect the sequentia
 We will be using the CPUs of the GHC machines as well as the shared memory nodes on Bridges-2 at the Pittsburgh Supercomputing Center to measure how our implementation scales. We will start from scratch in our implementation. Upon completion of a sequential implementation, we will identify areas for parallelism (possibly in addition to ones we’ll already described) and will work on parallelizing the algorithm.
 
 We will refer to existing research on parallel FFT implementations. For example, we will take a look at Spiral Lab’s work on optimizing FFT memory access through transposes and blocked layouts. Some specific papers/resources we’re relying on are:
+
 1. Slides from Michael Bader’s course on Algorithms of Scientific Computing (FFT specific parts)
 2. Large Bandwidth-Efficient FFTs on Multicore and Multi-Socket Systems by the Spiral team
 3. FFTs with Near-Optimal Memory Access Through Block Data Layouts by the Spiral team
@@ -69,10 +72,10 @@ Week 5 (12/12): Spillover in case we don’t meet the early deadline target
 ## **Schedule**
 
 First half of 11/28:     Finish milestone report (Saatvik and Anuvind)<br>
-Second half of 11/28:    Finish 2D FFT (comparing 2 ways of parallelizing and transpose optimization) (Saatvik then Anuvind)<br>
+Second half of 11/28:    Finish 2D FFT (comparing 2 ways of parallelizing and transpose optimization) (Anuvind then Saatvik)<br>
 First half of 12/05:     Complete image processing (Saatvik then Anuvind)<br>
-Second half of 12/05:    Complete write up and convert materials for presentation (Anuvind then Saatvik<br>
-Week of 12/12:           Spillover (**not preferred**)<br>
+Second half of 12/05:    Complete write up and convert materials for presentation (Anuvind then Saatvik)<br>
+Week of 12/12:           Spillover<br>
 
 ## **Summary**
 
@@ -91,15 +94,16 @@ We will provide more details of our specific optimizations and their motivations
 So far we have been able to meet all of our required goals and have been on track with our specified schedule. Therefore, we believe we will be able to produce all of our required deliverables. Regarding our “nice to haves”, we believe we should be able to complete the image compression application; however, we may not implement the “tiling” optimization for 2D FFT. We noticed that this optimization is very similar to the “chunking” optimization we implemented for 1D FFT, but requires more implementation work. Moreover, the optimization helps when multiple rows/columns fit in the cache; since our focus is on large datasets, we don’t think this will give us an improvement over our 1D FFT optimizations.
 
 ## **Presentation Materials**
+
 We will be presenting detailed speedup graphs (and other supporting evidence such as cache access information) for each of our implementations. We also hope to have a simple CLI program that can be used to perform image compression using our most performant implementation.
 
 ## **Preliminary Results**
 
-The first chart shows our initial DFT implementation that was parallelized and then optimized (reduced number matrix elements to be computed from n<sup>2</sup> to n). However, despite these efforts, we can observe that the quadratic time implementation was significantly worse than any of the FFT implementations.
+The first chart shows how our optimized DFT implementation achieves nearly perfect scaling. This was one of the motivations for switching over to this implementation at high recursion depths in our recursive FFT implementation. However, The quadratic time complexity of this algorithm makes it unsuitable for use on large datasets.
 
-The second chart below showcases three of our FFT implementations (note the quadratic DFT implementation is not included due to the worse asymptotic behavior). Our initial recursive implementation of FFT had terrible scaling and performance. As can be seen, we were able to significantly improve performance and scaling with different approaches and optimizations. In our final report, we will elaborate further on the drivers of these results and the reasoning for our optimizations.
+The second chart below showcases the performance of three of our FFT implementations on a large dataset. Our initial recursive implementation of FFT had terrible scaling and performance. As can be seen, we were able to significantly improve performance and scaling in our other implementations. In our final report, we will elaborate further on the drivers of these results and the reasoning behind our optimizations.
 
-The third chart showcases the data we utilized to determine the parallel threshold (below which we switched to using DFT) for our parallel recursive implementation of FFT.
+The third chart showcases the data we utilized to determine the threshold (below which we switched to using DFT) for our parallel recursive implementation of FFT.
 
 ![Graph of execution time for DFT implementation](dftTime.png)
 
