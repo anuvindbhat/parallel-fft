@@ -101,7 +101,7 @@ We will be presenting detailed speedup graphs (and other supporting evidence suc
 
 ## **Preliminary Results**
 
-The first chart shows how our optimized DFT implementation achieves nearly perfect scaling. This was one of the motivations for switching over to this implementation at high recursion depths in our recursive FFT implementation. However, The quadratic time complexity of this algorithm makes it unsuitable for use on large datasets.
+The first chart shows how our optimized DFT implementation achieves nearly perfect scaling. This was one of the motivations for switching over to this implementation at high recursion depths in our recursive FFT implementation. However, the quadratic time complexity of this algorithm makes it unsuitable for use on large datasets.
 
 The second chart below showcases the performance of three of our FFT implementations on a large dataset. Our initial recursive implementation of FFT had terrible scaling and performance. As can be seen, we were able to significantly improve performance and scaling in our other implementations. In our final report, we will elaborate further on the drivers of these results and the reasoning behind our optimizations.
 
