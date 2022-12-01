@@ -1,6 +1,7 @@
 #include "fft1d.h"
 #include "utils.h"
 #include <algorithm>
+#include <cassert>
 #include <complex>
 #include <cstdint>
 #include <utility>
@@ -43,7 +44,7 @@ template <bool inverse> void dft(std::vector<std::complex<double>> &vec) {
 template <bool inverse>
 void fft_rec_helper(std::vector<std::complex<double>> &vec) {
   int32_t n = vec.size();
-  assert_pow2(n);
+  assert(is_pow2(n));
   if (n == 1) {
     return;
   }
@@ -114,7 +115,7 @@ inline int32_t bit_reverse(int32_t n, int32_t total_bits) {
 
 template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
   int32_t n = vec.size();
-  assert_pow2(n);
+  assert(is_pow2(n));
   // the total number of bits required to represent 0..n-1 since n is a power
   // of 2
   int32_t total_bits = floor_log2(n);
@@ -172,6 +173,7 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
   };
   // how many iterations of the inner loop worth of data (vec and w) fit in the
   // L1 cache (possibly L2)
+  static_assert(is_pow2(iters_in_cache));
   int32_t cache_size = std::min(n, iters_in_cache);
 #pragma omp parallel for schedule(static)
   for (int32_t jb = 0; jb < n; jb += cache_size) {

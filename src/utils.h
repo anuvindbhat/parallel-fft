@@ -1,15 +1,15 @@
 #ifndef UTILS_H
 #define UTILS_H
 
-#include <cassert>
 #include <complex>
+#include <concepts>
 #include <cstdint>
 #include <vector>
 
 inline constexpr double pi = 3.14159265358979323846;
 
-template <typename T> void assert_pow2(T v) {
-  assert(v != 0 and (v & (v - 1)) == 0);
+template <std::integral T> constexpr bool is_pow2(T v) {
+  return v != 0 and (v & (v - 1)) == 0;
 }
 
 inline std::vector<std::complex<double>>
