@@ -150,25 +150,23 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
     int32_t i = j - temp;
     w[j - 1] = std::polar(1.0, flag * 2 * pi * i / len);
   }
-  auto inner_loop = [&vec, &w](int32_t len, int32_t j) {
-    for (int32_t i = 0; i < len / 2; ++i) {
-      // auto currw = std::polar(1.0, flag * 2 * pi * i / len);
-      auto currw = w[len / 2 + i - 1];
-      int32_t even_i = j + i;
-      int32_t odd_i = j + i + len / 2;
-      // we can overwrite in-place since result[i] and result[i + n / 2] only
-      // depend on input[i] and input[i + n / 2] i.e. an iteration of the i
-      // loop only depends on the values that it modifies
-      auto even = vec[even_i];
-      auto odd = vec[odd_i];
-      vec[even_i] = even + currw * odd;
-      vec[odd_i] = even - currw * odd;
-      // we can also just divide each element by n at the very end
-      // we divide here to mimic the recursive implementation
-      if constexpr (inverse) {
-        vec[even_i] /= 2;
-        vec[odd_i] /= 2;
-      }
+  auto loop_body = [&vec, &w](int32_t len, int32_t j, int32_t i) {
+    // auto currw = std::polar(1.0, flag * 2 * pi * i / len);
+    auto currw = w[len / 2 + i - 1];
+    int32_t even_i = j + i;
+    int32_t odd_i = j + i + len / 2;
+    // we can overwrite in-place since result[i] and result[i + n / 2] only
+    // depend on input[i] and input[i + n / 2] i.e. an iteration of the i
+    // loop only depends on the values that it modifies
+    auto even = vec[even_i];
+    auto odd = vec[odd_i];
+    vec[even_i] = even + currw * odd;
+    vec[odd_i] = even - currw * odd;
+    // we can also just divide each element by n at the very end
+    // we divide here to mimic the recursive implementation
+    if constexpr (inverse) {
+      vec[even_i] /= 2;
+      vec[odd_i] /= 2;
     }
   };
   // how many iterations of the inner loop worth of data (vec and w) fit in the
@@ -181,7 +179,9 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
     // needs to be loaded in once)
     for (int32_t len = 2; len <= cache_size; len *= 2) {
       for (int32_t j = jb; j < jb + cache_size; j += len) {
-        inner_loop(len, j);
+        for (int32_t i = 0; i < len / 2; ++i) {
+          loop_body(len, j, i);
+        }
       }
     }
   }
@@ -189,8 +189,28 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
   // longer fit in the cache since bottom-up FFT has good spatial locality
   for (int32_t len = 2 * cache_size; len <= n; len *= 2) {
 #pragma omp parallel for schedule(static)
-    for (int32_t j = 0; j < n; j += len) {
-      inner_loop(len, j);
+    for (int32_t k = 0; k < n; k += 2) {
+      // nesting the j and i loops has poor parallelism at later stages of
+      // the butterfly when there are very few iterations of the j loop (since
+      // we're parallelizing the j loop which is the outer loop)
+      // with this optimization, we're effectively able to exploit parallelism
+      // in the i loop as well at the expense of having to do some index
+      // arithmetic
+      // this is slower for low thread counts but scales better at high thread
+      // counts
+      int32_t j = (k / len) * len;
+      int32_t i = (k - j) / 2;
+      loop_body(len, j, i);
+    }
+    if constexpr (false) {
+      // code with better performance at low thread counts left here for
+      // reference
+#pragma omp parallel for schedule(static)
+      for (int32_t j = 0; j < n; j += len) {
+        for (int32_t i = 0; i < len / 2; ++i) {
+          loop_body(len, j, i);
+        }
+      }
     }
   }
   // could alternatively have done this instead of dividing by 2 at every
