@@ -200,7 +200,8 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
         // arithmetic
         // this is slower for low thread counts but scales better at high
         // thread counts
-        int32_t j = k - k % len;
+        // k & (len - 1) is k % len when len is a power of 2
+        int32_t j = k - (k & (len - 1));
         int32_t i = (k - j) / 2;
         loop_body(len, j, i);
       }
