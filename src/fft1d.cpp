@@ -134,7 +134,15 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
   //   precomputed value than recompute every time; w is accessed with good
   //   spatial locality
   std::vector<std::complex<double>> w(n - 1);
-  if constexpr (false) {
+  if constexpr (true) {
+#pragma omp parallel for schedule(static)
+    for (int32_t j = 1; j < n; ++j) {
+      int32_t temp = 1 << floor_log2(j);
+      int32_t len = 2 * temp;
+      int32_t i = j - temp;
+      w[j - 1] = std::polar(1.0, flag * 2 * pi * i / len);
+    }
+  } else {
     // this reference implementation isn't easy to parallelize well; just left
     // it here for reference
     for (int32_t len = 2; len <= n; len *= 2) {
@@ -142,13 +150,6 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
         w[len / 2 + i - 1] = std::polar(1.0, flag * 2 * pi * i / len);
       }
     }
-  }
-#pragma omp parallel for schedule(static)
-  for (int32_t j = 1; j < n; ++j) {
-    int32_t temp = 1 << floor_log2(j);
-    int32_t len = 2 * temp;
-    int32_t i = j - temp;
-    w[j - 1] = std::polar(1.0, flag * 2 * pi * i / len);
   }
   auto loop_body = [&vec, &w](int32_t len, int32_t j, int32_t i) {
     // auto currw = std::polar(1.0, flag * 2 * pi * i / len);
@@ -188,21 +189,22 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
   // perform regular bottom-up FFT for the entire array once the chunks no
   // longer fit in the cache since bottom-up FFT has good spatial locality
   for (int32_t len = 2 * cache_size; len <= n; len *= 2) {
+    if constexpr (true) {
 #pragma omp parallel for schedule(static)
-    for (int32_t k = 0; k < n; k += 2) {
-      // nesting the j and i loops has poor parallelism at later stages of
-      // the butterfly when there are very few iterations of the j loop (since
-      // we're parallelizing the j loop which is the outer loop)
-      // with this optimization, we're effectively able to exploit parallelism
-      // in the i loop as well at the expense of having to do some index
-      // arithmetic
-      // this is slower for low thread counts but scales better at high thread
-      // counts
-      int32_t j = (k / len) * len;
-      int32_t i = (k - j) / 2;
-      loop_body(len, j, i);
-    }
-    if constexpr (false) {
+      for (int32_t k = 0; k < n; k += 2) {
+        // nesting the j and i loops has poor parallelism at later stages of
+        // the butterfly when there are very few iterations of the j loop
+        // (since we're parallelizing the j loop which is the outer loop) with
+        // this optimization, we're effectively able to exploit parallelism in
+        // the i loop as well at the expense of having to do some index
+        // arithmetic
+        // this is slower for low thread counts but scales better at high
+        // thread counts
+        int32_t j = (k / len) * len;
+        int32_t i = (k - j) / 2;
+        loop_body(len, j, i);
+      }
+    } else {
       // code with better performance at low thread counts left here for
       // reference
 #pragma omp parallel for schedule(static)
