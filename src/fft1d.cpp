@@ -94,15 +94,6 @@ template <bool inverse> void fft_rec(std::vector<std::complex<double>> &vec) {
   { fft_rec_helper<inverse>(vec); }
 }
 
-inline int32_t floor_log2(int32_t n) {
-  int32_t ret = -1;
-  while (n != 0) {
-    ++ret;
-    n >>= 1;
-  }
-  return ret;
-}
-
 inline int32_t bit_reverse(int32_t n, int32_t total_bits) {
   int32_t rev = 0;
   for (int32_t i = 0; i < total_bits; ++i) {

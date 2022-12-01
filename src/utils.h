@@ -12,6 +12,24 @@ template <std::integral T> constexpr bool is_pow2(T v) {
   return v != 0 and (v & (v - 1)) == 0;
 }
 
+template <std::integral T> int32_t floor_log2(T n) {
+  int32_t ret = 0;
+  // n must be > 0
+  while (n != 1) {
+    ++ret;
+    n >>= 1;
+  }
+  return ret;
+}
+
+template <std::integral T> int32_t ceil_log2(T n) {
+  int32_t ret = 0;
+  while ((1 << ret) < n) {
+    ++ret;
+  }
+  return ret;
+}
+
 inline std::vector<std::complex<double>>
 to_complex(const std::vector<double> &vec) {
   std::vector<std::complex<double>> cvec(vec.size());
