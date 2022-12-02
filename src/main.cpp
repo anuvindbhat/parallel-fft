@@ -1,6 +1,7 @@
 #include "fft1d.h"
 #include "timer.h"
 #include "utils.h"
+#include "imgCompression.h"
 #include <chrono>
 #include <fstream>
 #include <iostream>
@@ -8,6 +9,7 @@
 #include <omp.h>
 #include <random>
 #include <vector>
+#include<string.h>
 
 int allSizes[5] = {1 << 10, 1 << 12, 1 << 15, 1 << 20, 1 << 25};
 
@@ -24,7 +26,7 @@ std::vector<double> generate(int size, int seed) {
   return result;
 }
 
-std::vector<std::vector<double>> generate2D(int size) {
+std::vector<std::vector<double>> generate2D(long unsigned int size) {
   std::vector<std::vector<double>> result;
   
   for (long unsigned int j = 0; j < size; j++) {
@@ -72,7 +74,7 @@ void saveToFile(std::string fileName, std::vector<std::vector<double>> values) {
     std::cout << "error writing file \"" << fileName << "\"" << std::endl;
     return;
   }
-  for (int i = 0; i < values.size(); i++) {
+  for (long unsigned int i = 0; i < values.size(); i++) {
     for (std::vector<double> value : values) {
       file << value[i] << ", ";
     }
@@ -83,27 +85,39 @@ void saveToFile(std::string fileName, std::vector<std::vector<double>> values) {
     std::cout << "error writing file \"" << fileName << "\"" << std::endl;
 }
 
-int main() {
+struct StartupOptions {
+  int precentCompression = 10;
+  std::string inputFile = "car.bmp";
+};
+
+StartupOptions parseOptions(int argc, const char **argv) {
+  StartupOptions rs;
+  for (int i = 1; i < argc; i++) {
+    if (i < argc - 1) {
+      if (strcmp(argv[i], "-p") == 0)
+        rs.precentCompression = atoi(argv[i + 1]);
+      else if (strcmp(argv[i], "-in") == 0)
+        rs.inputFile = argv[i + 1];
+    }
+  }
+  return rs;
+}
+
+int main(int argc, const char **argv) {
+
+  StartupOptions options = parseOptions(argc, argv);
+
   // disable nested parallelism
   omp_set_max_active_levels(1);
-  // int currDataSet = 2;
+  int currDataSet = 2;
   // int currThreadCount = 8; // Used only for generating and tracking output files
-  int codeBlock = -1;       // which conditional code block to execute below
+  int codeBlock = 3;       // which conditional code block to execute below
   // bool resultToFile = false;
 
-  // std::vector<double> input = generate(allSizes[currDataSet], 0);
-      // loadFromFile("data_" + std::to_string(allSizes[currDataSet]) + ".txt");
+  std::vector<double> input = generate(allSizes[currDataSet], 0);
+  // loadFromFile("data_" + std::to_string(allSizes[currDataSet]) + ".txt");
 
-  std::vector<std::complex<double>> newInput(2);
-  // std::vector<std::complex<double>> newInput = to_complex(input);
-
-  std::vector<std::vector<double>> input = generate2D(1 << 3);
-  saveToFile("bruh", input);
-
-  std::vector<std::vector<std::complex<double>>> complex = to_complex_2d(input);
-  std::vector<std::vector<double>> back = to_reals_2d(complex);
-
-  saveToFile("bruh_ret", back);
+  std::vector<std::complex<double>> newInput = to_complex(input);
 
   if (codeBlock == 0) {
     Timer<std::chrono::microseconds> t("Parallelized DFT");
@@ -141,6 +155,41 @@ int main() {
     //   saveToFile("data_" + std::to_string(allSizes[currDataSet]) +
     //                  "_out_FFT_T" + std::to_string(currThreadCount) + ".txt",
     //              actual);
+  } else if (codeBlock == 3) {
+    // below are all files if mass testing is required
+    // imgCompress("threeBlue.bmp", 10);
+    // std::cout << std::endl;
+    // imgCompress("7x5Blue.bmp", 10);
+    // std::cout << std::endl;
+    // imgCompress("5x7Blue.bmp", 10);
+    // std::cout << std::endl;
+    // imgCompress("car.bmp", 10);
+    //  std::cout << std::endl;
+    // imgCompress("4x4green.bmp", 10);
+    // std::cout << std::endl;
+    // imgCompress("10green.bmp", 10);
+    // std::cout << std::endl;
+    // imgCompress("50green.bmp", 10);
+    // std::cout << std::endl;
+    // imgCompress("74green.bmp", 10);
+    // std::cout << std::endl;
+    // imgCompress("90green.bmp", 10);
+    // std::cout << std::endl;
+    // imgCompress("100green.bmp", 10);
+    // std::cout << std::endl;
+    // imgCompress("100x2green.bmp", 10);
+    // std::cout << std::endl;
+    // imgCompress("100x10green.bmp", 10);
+    // std::cout << std::endl;
+    // imgCompress("1080green.bmp", 10);
+    // std::cout << std::endl;
+    // imgCompress("red.bmp", 10);
+    // std::cout << std::endl;
+    // imgCompress("sevenBlue.bmp", 10);
+    // std::cout << std::endl;
+    // imgCompress("threeBlue.bmp", 10);
+
+    imgCompress(options.inputFile, options.precentCompression);
   }
   return 0;
 }
