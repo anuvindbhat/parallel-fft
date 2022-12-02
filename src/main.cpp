@@ -1,15 +1,15 @@
 #include "fft1d.h"
+#include "imgCompression.h"
 #include "timer.h"
 #include "utils.h"
-#include "imgCompression.h"
 #include <chrono>
 #include <fstream>
 #include <iostream>
 #include <numeric>
 #include <omp.h>
 #include <random>
+#include <string.h>
 #include <vector>
-#include<string.h>
 
 int allSizes[5] = {1 << 10, 1 << 12, 1 << 15, 1 << 20, 1 << 25};
 
@@ -18,7 +18,7 @@ std::vector<double> generate(int size, int seed) {
   std::default_random_engine re;
   re.seed(re.default_seed + seed);
   std::vector<double> result;
-  
+
   for (int i = 0; i < size; i++) {
     result.push_back(unif(re));
   }
@@ -28,7 +28,7 @@ std::vector<double> generate(int size, int seed) {
 
 std::vector<std::vector<double>> generate2D(long unsigned int size) {
   std::vector<std::vector<double>> result;
-  
+
   for (long unsigned int j = 0; j < size; j++) {
     result.push_back(generate(size, j));
   }
@@ -68,7 +68,8 @@ void saveToFile(std::string fileName, std::vector<double> values) {
     std::cout << "error writing file \"" << fileName << "\"" << std::endl;
 }
 
-void saveToFile(std::string fileName, std::vector<std::vector<double>> values) {
+void saveToFile(std::string fileName,
+                std::vector<std::vector<double>> values) {
   std::ofstream file("./src/data/" + fileName);
   if (!file) {
     std::cout << "error writing file \"" << fileName << "\"" << std::endl;
@@ -110,8 +111,9 @@ int main(int argc, const char **argv) {
   // disable nested parallelism
   omp_set_max_active_levels(1);
   int currDataSet = 2;
-  // int currThreadCount = 8; // Used only for generating and tracking output files
-  int codeBlock = 3;       // which conditional code block to execute below
+  // int currThreadCount = 8; // Used only for generating and tracking output
+  // files
+  int codeBlock = 3; // which conditional code block to execute below
   // bool resultToFile = false;
 
   std::vector<double> input = generate(allSizes[currDataSet], 0);
@@ -128,7 +130,8 @@ int main(int argc, const char **argv) {
 
     // if (resultToFile)
     //   saveToFile("data_" + std::to_string(allSizes[currDataSet]) +
-    //                  "_out_DFT_T" + std::to_string(currThreadCount) + ".txt",
+    //                  "_out_DFT_T" + std::to_string(currThreadCount) +
+    //                  ".txt",
     //              actual);
 
   } else if (codeBlock == 1) {
@@ -141,11 +144,11 @@ int main(int argc, const char **argv) {
 
     // if (resultToFile)
     //   saveToFile("data_" + std::to_string(allSizes[currDataSet]) +
-    //                  "_out_FFT_T" + std::to_string(currThreadCount) + ".txt",
+    //                  "_out_FFT_T" + std::to_string(currThreadCount) +
+    //                  ".txt",
     //              actual);
   } else if (codeBlock == 2) {
-    Timer<std::chrono::microseconds> t(
-        "Parallelized Iterative FFT");
+    Timer<std::chrono::microseconds> t("Parallelized Iterative FFT");
 
     fft_iter<false>(newInput);
     // fft_iter<true>(newInput);
@@ -153,7 +156,8 @@ int main(int argc, const char **argv) {
 
     // if (resultToFile)
     //   saveToFile("data_" + std::to_string(allSizes[currDataSet]) +
-    //                  "_out_FFT_T" + std::to_string(currThreadCount) + ".txt",
+    //                  "_out_FFT_T" + std::to_string(currThreadCount) +
+    //                  ".txt",
     //              actual);
   } else if (codeBlock == 3) {
     // below are all files if mass testing is required
