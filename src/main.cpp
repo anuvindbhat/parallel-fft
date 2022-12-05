@@ -171,7 +171,28 @@ void compress(const std::string &in, const std::string &out, double frac) {
   write_ppm(out, img);
 }
 
-int main() {
+struct StartupOptions {
+  int precentCompression = 10;
+  std::string inputFile = "car.bmp";
+};
+
+StartupOptions parseOptions(int argc, const char **argv) {
+  StartupOptions rs;
+  for (int i = 1; i < argc; i++) {
+    if (i < argc - 1) {
+      if (strcmp(argv[i], "-p") == 0)
+        rs.precentCompression = atoi(argv[i + 1]);
+      else if (strcmp(argv[i], "-in") == 0)
+        rs.inputFile = argv[i + 1];
+    }
+  }
+  return rs;
+}
+
+int main(int argc, const char **argv) {
+
+  StartupOptions options = parseOptions(argc, argv);
+
   // disable nested parallelism
   omp_set_max_active_levels(1);
   double ratio = 0.995;
