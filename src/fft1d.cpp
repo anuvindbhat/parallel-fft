@@ -9,8 +9,8 @@
 
 // 1 << 4 for GHC, 1 << 6 for PSC
 inline constexpr int32_t recursion_threshold = 1 << 4;
-// 1 << 14 for GHC
-inline constexpr int32_t iters_in_cache = 1 << 14;
+// 1 << 16 for GHC, 1 << 17 for PSC
+inline constexpr int32_t iters_in_cache = 1 << 16;
 
 template <bool inverse> void dft(std::vector<std::complex<double>> &vec) {
   int32_t n = vec.size();
