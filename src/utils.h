@@ -2,17 +2,16 @@
 #define UTILS_H
 
 #include <complex>
-#include <concepts>
 #include <cstdint>
 #include <vector>
 
 inline constexpr double pi = 3.14159265358979323846;
 
-template <std::integral T> constexpr bool is_pow2(T v) {
+template <typename T> constexpr bool is_pow2(T v) {
   return v != 0 and (v & (v - 1)) == 0;
 }
 
-template <std::integral T> int32_t floor_log2(T n) {
+template <typename T> int32_t floor_log2(T n) {
   int32_t ret = 0;
   // n must be > 0
   while (n != 1) {
@@ -22,7 +21,7 @@ template <std::integral T> int32_t floor_log2(T n) {
   return ret;
 }
 
-template <std::integral T> int32_t ceil_log2(T n) {
+template <typename T> int32_t ceil_log2(T n) {
   int32_t ret = 0;
   while ((1 << ret) < n) {
     ++ret;
@@ -49,21 +48,29 @@ to_reals(const std::vector<std::complex<double>> &cvec) {
 }
 
 inline std::vector<std::vector<std::complex<double>>>
-to_complex_2d(const std::vector<std::vector<double>> &vecs) {
-  std::vector<std::vector<std::complex<double>>> cvecs;
-  for (std::vector<double> vec : vecs) {
-    cvecs.push_back(to_complex(vec));
+to_complex_2d(const std::vector<std::vector<double>> &mat) {
+  int32_t n = mat.size();
+  if (n == 0) {
+    return {};
   }
-  return cvecs;
+  std::vector<std::vector<std::complex<double>>> cmat(n);
+  for (int32_t i = 0; i < n; ++i) {
+    cmat[i] = to_complex(mat[i]);
+  }
+  return cmat;
 }
 
 inline std::vector<std::vector<double>>
-to_reals_2d(const std::vector<std::vector<std::complex<double>>> &cvecs) {
-  std::vector<std::vector<double>> vecs;
-  for (std::vector<std::complex<double>> cvec : cvecs) {
-    vecs.push_back(to_reals(cvec));
+to_reals_2d(const std::vector<std::vector<std::complex<double>>> &cmat) {
+  int32_t n = cmat.size();
+  if (n == 0) {
+    return {};
   }
-  return vecs;
+  std::vector<std::vector<double>> mat(n);
+  for (int32_t i = 0; i < n; ++i) {
+    mat[i] = to_reals(cmat[i]);
+  }
+  return mat;
 }
 
 template <typename T>

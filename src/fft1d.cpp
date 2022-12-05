@@ -136,7 +136,7 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
     }
   } else {
     // this reference implementation isn't easy to parallelize well; just left
-    // it here for reference
+    // it here for reference (can't use collapse here)
     for (int32_t len = 2; len <= n; len *= 2) {
       for (int32_t i = 0; i < len / 2; ++i) {
         w[len / 2 + i - 1] = std::polar(1.0, flag * 2 * pi * i / len);
@@ -200,9 +200,8 @@ template <bool inverse> void fft_iter(std::vector<std::complex<double>> &vec) {
         loop_body(len, j, i);
       }
     } else {
-      // code with better performance at low thread counts left here for
-      // reference
-#pragma omp parallel for schedule(static)
+      // code with slightly better performance using collapse
+#pragma omp parallel for schedule(static) collapse(2)
       for (int32_t j = 0; j < n; j += len) {
         for (int32_t i = 0; i < len / 2; ++i) {
           loop_body(len, j, i);
