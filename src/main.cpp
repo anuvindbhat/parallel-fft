@@ -1,8 +1,8 @@
 #include "fft1d.h"
 #include "fft2d.h"
+#include "ppm.h"
 #include "timer.h"
 #include "utils.h"
-#include "ppm.h"
 #include <algorithm>
 #include <cassert>
 #include <chrono>
@@ -127,7 +127,8 @@ int main() {
   // disable nested parallelism
   omp_set_max_active_levels(1);
   // double ratio = 0.995;
-  // compress("images/test.ppm", "images/testout" + std::to_string(ratio) + ".ppm", 1 - ratio);
+  // compress("images/test.ppm", "images/testout" + std::to_string(ratio) +
+  // ".ppm", 1 - ratio);
   test1d();
   return 0;
 }

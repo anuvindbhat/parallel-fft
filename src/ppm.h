@@ -1,9 +1,9 @@
 #ifndef PPM_H
 #define PPH_H
 
+#include <cstdint>
 #include <string>
 #include <vector>
-#include <cstdint>
 
 struct rgb_image {
   std::vector<std::vector<uint8_t>> mat[3];

@@ -1,9 +1,9 @@
 #include "ppm.h"
+#include <cassert>
+#include <cstdint>
+#include <fstream>
 #include <string>
 #include <vector>
-#include <cstdint>
-#include <cassert>
-#include <fstream>
 
 rgb_image read_ppm(const std::string &file_name) {
   std::string ppm_type, width, height, channel_size;
