@@ -286,6 +286,34 @@ measureItersInCacheAgainstCachePerformance () {
         perf stat -e cache-misses -e cache-references -o cacheIters.txt --append ./fft.out
     done
 }
+
+measureSpeedup2DFFTIter () {
+
+    printf "All timing in ms\n" > timing2DIterativeFFT.txt
+    printf "1 << 10, 1 << 12, 1 << 15, 1 << 20, 1 << 25\n" >> timing2DIterativeFFT.txt
+    printf "=====================" >> timing2DIterativeFFT.txt
+
+    # sed -i -r "s/recursion_threshold = [0-9]*/recursion_threshold = 16/" src/fft1d.cpp # change to 64 for PSC
+
+    sed -i -r "s/codeBlock = [0-9]*/codeBlock = 3/" src/main.cpp
+
+    for threads in 1 2 4 8; do # add 16 32 64 128 for PSC
+        export OMP_NUM_THREADS=$threads
+
+        printf "\n$threads | " >> timing2DIterativeFFT.txt
+        for dataSet in 0 1 2 3 4; do
+            sed -i -r "s/currDataSet = [0-9]*/currDataSet = $dataSet/" src/main.cpp
+
+            printf "2DFFTIter: (Thread: $threads, DataSet: $dataSet)\n"
+
+            make clean
+            
+            make
+            
+            ./fft.out >> timing2DIterativeFFT.txt
+        done
+    done
+}
 # Make sure to modify speedup functions when running on PSC
 
-measureItersInCacheAgainstCachePerformance
+measureSpeedup2DFFTIter

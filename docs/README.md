@@ -133,3 +133,9 @@ The third chart showcases the data we utilized to determine the threshold (below
 ![Graph of execution time for for all 1D FFT implementation](parallelImplementationsTime.png)
 
 ![Graph of recursion depth vs execution time for recursive FFT implementation](parThreshold.png)
+
+---
+
+# Final Report
+
+[finalWriteup.pdf]
