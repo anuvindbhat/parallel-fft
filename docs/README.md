@@ -19,6 +19,7 @@ Anuvind Bhat (`anuvindb`) & Saatvik Suryajit Korisepati (`skorisep`)
   - [**Progress Regarding Goals and Deliverables**](#progress-regarding-goals-and-deliverables)
   - [**Presentation Materials**](#presentation-materials)
   - [**Preliminary Results**](#preliminary-results)
+- [Final Report](#final-report)
 
 ---
 
@@ -138,4 +139,4 @@ The third chart showcases the data we utilized to determine the threshold (below
 
 # Final Report
 
-[finalWriteup.pdf]
+[Final Writeup](finalWriteup.pdf)
