@@ -19,6 +19,7 @@ Anuvind Bhat (`anuvindb`) & Saatvik Suryajit Korisepati (`skorisep`)
   - [**Progress Regarding Goals and Deliverables**](#progress-regarding-goals-and-deliverables)
   - [**Presentation Materials**](#presentation-materials)
   - [**Preliminary Results**](#preliminary-results)
+- [Final Report](#final-report)
 
 ---
 
@@ -133,3 +134,9 @@ The third chart showcases the data we utilized to determine the threshold (below
 ![Graph of execution time for for all 1D FFT implementation](parallelImplementationsTime.png)
 
 ![Graph of recursion depth vs execution time for recursive FFT implementation](parThreshold.png)
+
+---
+
+# Final Report
+
+[Final Writeup](finalWriteup.pdf)
