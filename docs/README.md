@@ -139,4 +139,6 @@ The third chart showcases the data we utilized to determine the threshold (below
 
 # Final Report
 
-[Final Writeup](finalWriteup.pdf)
+[Report](report.pdf)
+
+[Poster Slides](poster_slides.pdf)
